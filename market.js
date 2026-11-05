@@ -46,6 +46,19 @@ function parseSilverRate(page){const lines=page.split(/\r?\n/);for(const line of
 async function fetchReaderPage(path){let lastError;for(const prefix of ['https://r.jina.ai/http://','https://r.jina.ai/https://']){try{const page=await readText(prefix+'www.goodreturns.in/'+path);if(page.length>250)return page}catch(e){lastError=e}}throw lastError||Error('Reader did not return page content')}
 let goldHistory=[];
 try{const h=JSON.parse(localStorage.getItem('mmGoldHistory.v1')||'[]');if(Array.isArray(h))goldHistory=h}catch{}
+function mergeGoldHistory(incoming,liveRates,publishedDateText){
+ const merged=new Map();
+ for(const row of goldHistory)if(row?.date)merged.set(row.date,row);
+ for(const row of incoming)if(row?.date)merged.set(row.date,{...(merged.get(row.date)||{}),...row});
+ const dateMatch=String(publishedDateText||'').match(/(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\s+(\\d{1,2}),?\\s+(20\\d{2})/i);
+ if(dateMatch&&liveRates?.g24>1000&&liveRates?.g22>1000){
+  const monthNames={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+  const mi=monthNames[dateMatch[1].slice(0,3).toLowerCase()];
+  if(mi!==undefined){const d=new Date(Number(dateMatch[3]),mi,Number(dateMatch[2]));const date=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');const prev=merged.get(date)||{};merged.set(date,{...prev,date,label:d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}),g24:liveRates.g24,g22:liveRates.g22,kind:'daily'})}
+ }
+ goldHistory=[...merged.values()].sort((a,b)=>a.date.localeCompare(b.date));
+ try{localStorage.setItem('mmGoldHistory.v1',JSON.stringify(goldHistory))}catch{}
+}
 function drawGoldHistory(){
  const canvas=$('goldHistoryChart'),empty=$('goldHistoryEmpty');if(!canvas)return;
  const purity=$('goldHistoryPurity')?.value||'24',key=purity==='22'?'g22':'g24',range=document.querySelector('[data-history-range].active')?.dataset.historyRange||'week';
@@ -69,11 +82,18 @@ function drawGoldHistory(){
  const x=i=>pad.l+(w-pad.l-pad.r)*(data.length===1?.5:i/(data.length-1)),y=v=>pad.t+(h-pad.t-pad.b)*(1-(v-yMin)/(yMax-yMin));
  ctx.font='10px system-ui';ctx.textBaseline='middle';ctx.strokeStyle=line;ctx.fillStyle=muted;ctx.lineWidth=1;
  for(let i=0;i<4;i++){const yy=pad.t+(h-pad.t-pad.b)*i/3;ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();const val=yMax-(yMax-yMin)*i/3;ctx.textAlign='right';ctx.fillText('₹'+Math.round(val).toLocaleString('en-IN'),pad.l-8,yy)}
- ctx.beginPath();data.forEach((p,i)=>i?ctx.lineTo(x(i),y(p[key])):ctx.moveTo(x(i),y(p[key])));ctx.strokeStyle=gold;ctx.lineWidth=2.6;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();
+ ctx.beginPath();
+ if(data.length===1){ctx.arc(x(0),y(data[0][key]),1,0,Math.PI*2)}
+ else{
+  ctx.moveTo(x(0),y(data[0][key]));
+  for(let i=1;i<data.length-1;i++){const mx=(x(i)+x(i+1))/2,my=(y(data[i][key])+y(data[i+1][key]))/2;ctx.quadraticCurveTo(x(i),y(data[i][key]),mx,my)}
+  const last=data.length-1;ctx.lineTo(x(last),y(data[last][key]));
+ }
+ ctx.strokeStyle=gold;ctx.lineWidth=2.8;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();
  data.forEach((p,i)=>{ctx.beginPath();ctx.arc(x(i),y(p[key]),3.8,0,Math.PI*2);ctx.fillStyle=gold;ctx.fill();ctx.strokeStyle=styles.getPropertyValue('--surface').trim()||'#fff';ctx.lineWidth=2;ctx.stroke()});
  ctx.fillStyle=muted;ctx.textAlign='center';ctx.textBaseline='top';const labelStep=Math.max(1,Math.ceil(data.length/7));data.forEach((p,i)=>{if(i%labelStep===0||i===data.length-1)ctx.fillText(p.label,x(i),h-pad.b+9)});
 }
-async function refreshRates(){if(refreshing)return;refreshing=true;setStatus('Fetching Goodreturns gold and silver rates…');try{const [goldPage,silverPage]=await Promise.all([fetchReaderPage('gold-rates/bangalore.html'),fetchReaderPage('silver-rates/bangalore.html')]);const parsed=parseRates(goldPage),silver=parseSilverRate(silverPage);rates={...parsed,silver};const history=parseGoldHistory(goldPage);if(history.length){goldHistory=history;try{localStorage.setItem('mmGoldHistory.v1',JSON.stringify(goldHistory))}catch{}}drawGoldHistory();const dateMatch=silverPage.match(/(?:Nov|January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+20\d{2}|\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+20\d{2}/i)||goldPage.match(/(?:Nov|January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+20\d{2}|\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+20\d{2}/i);stamp=dateMatch?dateMatch[0]:new Date().toISOString();source='Goodreturns · Bangalore · gold and silver published indicative rates';try{localStorage.setItem('mmMarketCache.v2',JSON.stringify({rates,stamp,source,savedAt:Date.now()}))}catch{}draw();setStatus('Successfully updated gold and silver from Goodreturns · '+displayTime(stamp))}catch(e){setStatus('Could not update both metal rates: '+(e?.message||'Network or proxy error')+'. Showing last saved rates if available.');if(rates)draw();else ['gold24','gold22','gold18','dashGold24','dashGold22','silverGram','silverKg','dashSilver','dashSilverKg'].forEach(id=>{if($(id))$(id).textContent='Unavailable'})}finally{refreshing=false}}
+async function refreshRates(){if(refreshing)return;refreshing=true;setStatus('Fetching Goodreturns gold and silver rates…');try{const [goldPage,silverPage]=await Promise.all([fetchReaderPage('gold-rates/bangalore.html'),fetchReaderPage('silver-rates/bangalore.html')]);const parsed=parseRates(goldPage),silver=parseSilverRate(silverPage);rates={...parsed,silver};const history=parseGoldHistory(goldPage);const dateMatch=silverPage.match(/(?:Nov|January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+20\d{2}|\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+20\d{2}/i)||goldPage.match(/(?:Nov|January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+20\d{2}|\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+20\d{2}/i);stamp=dateMatch?dateMatch[0]:new Date().toISOString();mergeGoldHistory(history,parsed,dateMatch?.[0]||'');drawGoldHistory();source='Goodreturns · Bangalore · gold and silver published indicative rates';try{localStorage.setItem('mmMarketCache.v2',JSON.stringify({rates,stamp,source,savedAt:Date.now()}))}catch{}draw();setStatus('Successfully updated gold and silver from Goodreturns · '+displayTime(stamp))}catch(e){setStatus('Could not update both metal rates: '+(e?.message||'Network or proxy error')+'. Showing last saved rates if available.');if(rates)draw();else ['gold24','gold22','gold18','dashGold24','dashGold22','silverGram','silverKg','dashSilver','dashSilverKg'].forEach(id=>{if($(id))$(id).textContent='Unavailable'})}finally{refreshing=false}}
 function selectedRate(metal,purity){if(metal==='silver')return rates?.silver||0;return purity==='18'?(rates?.g18||0):purity==='22'?(rates?.g22||0):(rates?.g24||0)}
 function syncRates(){const im=$('investMetal')?.value||'gold',ip=$('investPurity')?.value||'22',jm=$('jewelMetal')?.value||'gold',jp=$('jewelPurity')?.value||'22';if($('investRate')&&!$('investRate').dataset.userEdited)$('investRate').value=selectedRate(im,ip)||'';if($('jewelRate')&&!$('jewelRate').dataset.userEdited)$('jewelRate').value=selectedRate(jm,jp)||''}
 function calculateInvestment(){const budget=num($('investBudget')?.value),rate=num($('investRate')?.value),gst=num($('investGst')?.value),grams=rate&&budget?budget/(rate*(1+gst/100)):0;if($('investGrams'))$('investGrams').textContent=grams?grams.toFixed(3)+' g':'—';if($('investSummary'))$('investSummary').textContent=grams?'Approx. '+fmt(budget)+' including '+gst+'% GST, excluding dealer charges.':'Enter a budget and valid rate.'}
