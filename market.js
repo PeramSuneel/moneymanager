@@ -22,9 +22,9 @@ function parseGoldHistory(page){
  const re=new RegExp('('+datePattern+')\\s*\\|\\s*₹\\s*([\\d,]+)(?:\\s*\\([^)]*\\))?\\s*\\|\\s*₹\\s*([\\d,]+)','gi');
  let m;
  while((m=re.exec(page))!==null){
-  const d=new Date(m[1].replace(/(\\d{1,2}),?\\s+(20\\d{2})/,'$1, $2'));
+  const d=new Date(m[1]);
   const v24=num(m[2].replace(/,/g,'')),v22=num(m[3].replace(/,/g,''));
-  if(!isNaN(d)&&v24>1000&&v22>1000&&!seen.has(d.toISOString().slice(0,10))){seen.add(d.toISOString().slice(0,10));rows.push({date:d.toISOString().slice(0,10),label:d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}),g24:v24,g22:v22})}
+  if(!isNaN(d)&&v24>1000&&v22>1000){const date=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');if(!seen.has(date)){seen.add(date);rows.push({date,label:d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}),g24:v24,g22:v22})}}
  }
  return rows.sort((a,b)=>a.date.localeCompare(b.date)).slice(-10);
 }
