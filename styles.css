@@ -417,3 +417,11 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 .metal-rate-card small.day-change-up{color:var(--green)!important;font-weight:800!important;display:block;margin-top:5px}
 .metal-rate-card small.day-change-down{color:var(--red)!important;font-weight:800!important;display:block;margin-top:5px}
 .metal-rate-card small.day-change-flat,.metal-rate-card small.day-change-unavailable{color:var(--muted)!important;font-weight:650!important;display:block;margin-top:5px}
+
+
+/* Metal movement: keep one-day change text neutral; colour today's rate itself */
+.metal-rate-card small.day-change-up,.metal-rate-card small.day-change-down,.metal-rate-card small.day-change-flat,.metal-rate-card small.day-change-unavailable{color:var(--muted)!important;font-weight:650!important;display:block;margin-top:5px}
+.metal-rate-card strong.rate-change-up{color:var(--green)!important}
+.metal-rate-card strong.rate-change-down{color:var(--red)!important}
+.metal-rate-card strong.rate-change-flat{color:var(--text)!important}
+.metal-rate-card strong.rate-change-unavailable{color:var(--text)!important}
