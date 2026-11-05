@@ -288,3 +288,57 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 .spending-detail table{font-size:11px}
 @media(max-width:850px){.spending-analysis-grid{grid-template-columns:1fr}.spending-chart-area{max-width:520px;width:100%;margin-inline:auto}.spending-chart-wrap{width:min(100%,310px)}}
 @media(max-width:480px){.spending-filters{display:grid;grid-template-columns:1fr 1fr;width:100%}.spending-filters .form-field{min-width:0}.spending-legend{grid-template-columns:1fr}.spending-detail{padding:11px}.spending-detail-head>strong{font-size:16px}}
+
+
+/* FINAL HEADER LAYOUT: brand left, centered navigation, utilities right; mobile hamburger dropdown */
+.site-navigation{
+ position:sticky!important;top:0!important;z-index:40!important;width:100%!important;
+ display:grid!important;grid-template-columns:max-content minmax(0,1fr) max-content!important;
+ grid-template-areas:"brand nav tools"!important;align-items:center!important;
+ gap:clamp(12px,2vw,28px)!important;min-height:72px!important;
+ padding:0 clamp(16px,3vw,42px)!important;overflow:visible!important;white-space:normal!important;
+}
+.nav-topline{grid-area:brand!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;min-width:max-content!important;min-height:68px!important;margin:0!important}
+.site-navigation .brand{display:flex!important;align-items:center!important;gap:10px!important;padding:0!important;margin:0!important;white-space:nowrap!important}
+.site-navigation .brand-icon{flex:0 0 auto!important}
+.site-navigation .brand b{font-size:16px!important;white-space:nowrap!important}
+.site-navigation .brand small,.site-navigation .nav-meta{display:none!important}
+.primary-navigation{
+ grid-area:nav!important;display:flex!important;align-items:center!important;justify-content:center!important;
+ flex-flow:row nowrap!important;gap:clamp(2px,.55vw,9px)!important;
+ width:100%!important;min-width:0!important;max-width:none!important;min-height:68px!important;
+ margin:0!important;padding:0!important;overflow:visible!important;white-space:nowrap!important;
+}
+.primary-navigation .nav-link{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 1 auto!important;min-width:0!important;white-space:nowrap!important;font-size:clamp(10px,.85vw,12px)!important;padding:9px clamp(6px,.8vw,12px)!important;gap:6px!important}
+.primary-navigation .nav-link i{flex:0 0 auto!important}
+.nav-utilities{grid-area:tools!important;display:flex!important;flex-flow:row nowrap!important;align-items:center!important;justify-content:flex-end!important;gap:9px!important;min-width:max-content!important;min-height:68px!important;padding:0!important;margin:0!important;border:0!important;white-space:nowrap!important}
+.nav-utilities .today{display:inline-flex!important;white-space:nowrap!important;font-size:11px!important;padding:0 3px!important}
+.nav-utilities .icon-button{flex:0 0 auto!important;width:36px!important;height:36px!important}
+.nav-utilities .button{flex:0 0 auto!important;white-space:nowrap!important;padding:9px 12px!important}
+.menu-toggle{display:none!important}
+@media(max-width:900px){
+ .site-navigation{grid-template-columns:minmax(0,1fr) auto max-content!important;grid-template-areas:"brand menu tools"!important;gap:clamp(8px,2vw,18px)!important;min-height:62px!important;padding:0 14px!important}
+ .nav-topline{min-height:60px!important}
+ .site-navigation .brand b{font-size:14px!important}
+ .site-navigation .brand-icon{width:34px!important;height:34px!important;font-size:19px!important}
+ .menu-toggle{grid-area:menu!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:4px!important;width:38px!important;height:38px!important;padding:8px!important;border:1px solid var(--line)!important;border-radius:10px!important;background:var(--surface)!important;color:var(--text)!important;cursor:pointer!important}
+ .menu-toggle span{display:block!important;width:17px!important;height:2px!important;border-radius:2px!important;background:currentColor!important}
+ .primary-navigation{display:none!important;position:absolute!important;top:calc(100% + 1px)!important;left:10px!important;right:10px!important;width:auto!important;min-width:0!important;min-height:0!important;max-width:none!important;padding:10px!important;margin:0!important;flex-flow:column nowrap!important;align-items:stretch!important;justify-content:flex-start!important;gap:4px!important;overflow:visible!important;background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:0 0 14px 14px!important;box-shadow:0 14px 30px rgba(0,0,0,.14)!important;z-index:50!important}
+ .primary-navigation.menu-open{display:flex!important}
+ .primary-navigation .nav-link{display:flex!important;justify-content:flex-start!important;width:100%!important;min-height:42px!important;flex:0 0 auto!important;padding:10px 12px!important;font-size:12px!important}
+ .nav-utilities{min-height:60px!important;gap:7px!important}
+ .nav-utilities .today{font-size:10px!important}
+ .nav-utilities .icon-button{width:33px!important;height:33px!important}
+ .nav-utilities .button{font-size:11px!important;padding:8px 10px!important}
+}
+@media(max-width:480px){
+ .site-navigation{gap:6px!important;padding:0 9px!important;grid-template-columns:minmax(0,1fr) auto max-content!important}
+ .site-navigation .brand{gap:6px!important}
+ .site-navigation .brand-icon{width:29px!important;height:29px!important;font-size:17px!important}
+ .site-navigation .brand b{font-size:12px!important}
+ .menu-toggle{width:32px!important;height:32px!important;padding:6px!important}
+ .nav-utilities{gap:5px!important}
+ .nav-utilities .today{font-size:9px!important;padding:0!important}
+ .nav-utilities .icon-button{width:29px!important;height:29px!important;font-size:14px!important}
+ .nav-utilities .button{font-size:10px!important;padding:7px 8px!important}
+}
