@@ -135,7 +135,7 @@ function renderDayChange(id,purity){
  }
  const sign=change.delta>0?'+':change.delta<0?'−':'';
  const direction=change.delta>0?'is-up':change.delta<0?'is-down':'is-flat';
- el.innerHTML='1-day change: <span class="day-change-value '+direction+'">'+sign+fmt(Math.abs(change.delta))+'</span>';
+ el.innerHTML='<span class="day-change-label">1-day change:</span><span class="day-change-value '+direction+'"> '+sign+fmt(Math.abs(change.delta))+'</span>';
  el.classList.add(change.delta>0?'day-change-up':change.delta<0?'day-change-down':'day-change-flat');
  const value=el.querySelector('.day-change-value');
  if(value)value.style.setProperty('color',change.delta>0?'var(--green)':change.delta<0?'var(--red)':'var(--muted)','important');
