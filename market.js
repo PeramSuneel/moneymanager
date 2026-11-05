@@ -78,7 +78,7 @@ function drawGoldHistory(){
  const selected=dateInput.value||localDateString(),latestDaily=goldHistory.filter(x=>x.kind==='daily').sort((a,b)=>a.date.localeCompare(b.date)).at(-1);
  const latestDate=latestDaily?.date||localDateString(),isLatest=selected===latestDate||selected===localDateString();
  let record=goldHistory.find(x=>x.date===selected&&x.kind==='daily');
- const isToday=selected===localDateString()||selected===latestDate;
+ const isToday=selected===localDateString();
  const v24=isToday&&rates?.g24?rates.g24:num(record?.g24),v22=isToday&&rates?.g22?rates.g22:num(record?.g22);
  const available=isToday?!!(v24&&v22):!!record;
  const put=(id,value)=>{if($(id))$(id).textContent=value};
