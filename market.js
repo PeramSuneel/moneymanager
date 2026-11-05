@@ -114,22 +114,19 @@ function dayChangeFor(key){
 }
 function applyRateDirection(id,purity){
  const el=$(id);if(!el)return;
- const key=purity==='24'?'g24':purity==='22'?'g22':purity==='18'?'g18':'silver';
- const change=dayChangeFor(key);
  el.classList.remove('rate-change-up','rate-change-down','rate-change-flat','rate-change-unavailable');
- el.classList.add(!change?'rate-change-unavailable':change.delta>0?'rate-change-up':change.delta<0?'rate-change-down':'rate-change-flat');
 }
 function renderDayChange(id,purity){
  const el=$(id);if(!el)return;
  const key=purity==='24'?'g24':purity==='22'?'g22':purity==='18'?'g18':'silver';
  const change=dayChangeFor(key);
  el.classList.remove('day-change-up','day-change-down','day-change-flat','day-change-unavailable');
- /* Keep one-day movement neutral grey in every metal card. */
- el.style.setProperty('color','var(--muted)','important');
- el.style.setProperty('font-weight','650','important');
- if(!change){el.textContent='1-day change: not published';el.classList.add('day-change-unavailable');return}
+ el.style.removeProperty('color');
+ el.style.removeProperty('font-weight');
+ if(!change){el.innerHTML='1-day change: <span class="day-change-value">not published</span>';el.classList.add('day-change-unavailable');return}
  const sign=change.delta>0?'+':change.delta<0?'−':'';
- el.textContent='1-day change: '+sign+fmt(Math.abs(change.delta));
+ const direction=change.delta>0?'is-up':change.delta<0?'is-down':'is-flat';
+ el.innerHTML='1-day change: <span class="day-change-value '+direction+'">'+sign+fmt(Math.abs(change.delta))+'</span>';
  el.classList.add(change.delta>0?'day-change-up':change.delta<0?'day-change-down':'day-change-flat');
 }
 async function refreshRates(){
