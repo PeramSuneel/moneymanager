@@ -44,7 +44,7 @@ function parseGoldHistory(page){
  return rows.sort((a,b)=>a.date.localeCompare(b.date));
 }
 function setStatus(s){['metalStatus','metalFreshness','dashMetalFreshness'].forEach(id=>{if($(id))$(id).textContent=s})}
-function draw(){if(!rates)return;[['gold24',rates.g24],['gold22',rates.g22],['gold18',rates.g18],['dashGold24',rates.g24],['dashGold22',rates.g22]].forEach(([id,v])=>{if($(id))$(id).textContent=fmt(v)});if(rates.silver){[['silverGram',rates.silver],['dashSilver',rates.silver]].forEach(([id,v])=>{if($(id))$(id).textContent=fmt(v)})}['metalSource','dashMetalSource'].forEach(id=>{if($(id))$(id).textContent=source});['metalFreshness','dashMetalFreshness'].forEach(id=>{if($(id))$(id).textContent='Goodreturns updated: '+displayTime(stamp)});renderDayChange('gold24Change','24');renderDayChange('gold22Change','22');renderDayChange('gold18Change','18');renderDayChange('dashGoldMove','24');renderDayChange('dashGold22Move','22');renderDayChange('dashGold18Move','18');renderDayChange('silverChange','silver');renderDayChange('dashSilverMove','silver');syncRates();calculateInvestment();calculateJewellery()}
+function draw(){if(!rates)return;[['gold24',rates.g24],['gold22',rates.g22],['gold18',rates.g18],['dashGold24',rates.g24],['dashGold22',rates.g22],['dashGold18',rates.g18]].forEach(([id,v])=>{if($(id))$(id).textContent=fmt(v)});if(rates.silver){[['silverGram',rates.silver],['dashSilver',rates.silver]].forEach(([id,v])=>{if($(id))$(id).textContent=fmt(v)})}['metalSource','dashMetalSource'].forEach(id=>{if($(id))$(id).textContent=source});['metalFreshness','dashMetalFreshness'].forEach(id=>{if($(id))$(id).textContent='Goodreturns updated: '+displayTime(stamp)});renderDayChange('gold24Change','24');renderDayChange('gold22Change','22');renderDayChange('gold18Change','18');renderDayChange('dashGoldMove','24');renderDayChange('dashGold22Move','22');renderDayChange('dashGold18Move','18');renderDayChange('silverChange','silver');renderDayChange('dashSilverMove','silver');[['gold24','24'],['gold22','22'],['gold18','18'],['dashGold24','24'],['dashGold22','22'],['dashGold18','18'],['silverGram','silver'],['dashSilver','silver']].forEach(([id,purity])=>applyRateDirection(id,purity));syncRates();calculateInvestment();calculateJewellery()}
 function parseSilverChange(page){
  const lines=page.split(/\r?\n/);
  for(const line of lines){
@@ -112,6 +112,13 @@ function dayChangeFor(key){
  const delta=current-num(prior[key]),pct=prior[key]?delta/num(prior[key])*100:0;
  return {delta,pct};
 }
+function applyRateDirection(id,purity){
+ const el=$(id);if(!el)return;
+ const key=purity==='24'?'g24':purity==='22'?'g22':purity==='18'?'g18':'silver';
+ const change=dayChangeFor(key);
+ el.classList.remove('rate-change-up','rate-change-down','rate-change-flat','rate-change-unavailable');
+ el.classList.add(!change?'rate-change-unavailable':change.delta>0?'rate-change-up':change.delta<0?'rate-change-down':'rate-change-flat');
+}
 function renderDayChange(id,purity){
  const el=$(id);if(!el)return;
  const key=purity==='24'?'g24':purity==='22'?'g22':purity==='18'?'g18':'silver';
@@ -120,7 +127,7 @@ function renderDayChange(id,purity){
  if(!change){el.textContent='1-day change: not published';el.classList.add('day-change-unavailable');return}
  const sign=change.delta>0?'+':change.delta<0?'−':'';
  el.textContent='1-day change: '+sign+fmt(Math.abs(change.delta))+' ('+(change.pct>0?'+':'')+change.pct.toFixed(2)+'%)';
- el.classList.add(change.delta>0?'day-change-up':change.delta<0?'day-change-down':'day-change-flat');
+ el.classList.add('day-change-flat');
 }
 async function refreshRates(){
  if(refreshing)return;refreshing=true;setStatus('Fetching Goodreturns gold and silver rates…');
