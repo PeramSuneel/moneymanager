@@ -454,12 +454,16 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
   font-weight:650!important;
 }
 
-/* Single source of truth for precious-metal movement colours.
-   Rate numbers carry direction; the one-day caption/value always stays neutral. */
-.metal-rate-card strong.rate-change-up{color:var(--green)!important}
-.metal-rate-card strong.rate-change-down{color:var(--red)!important}
+/* Precious metals: neutral rates and labels; colour only the daily change amount. */
+.metal-rate-card strong{
+  color:var(--muted)!important;
+}
+.metal-rate-card strong.rate-change-up,
+.metal-rate-card strong.rate-change-down,
 .metal-rate-card strong.rate-change-flat,
-.metal-rate-card strong.rate-change-unavailable{color:var(--text)!important}
+.metal-rate-card strong.rate-change-unavailable{
+  color:var(--muted)!important;
+}
 .metal-rate-card small[id$="Change"],
 .metal-rate-card small[id$="Move"],
 .metal-rate-card small.day-change-up,
@@ -471,3 +475,7 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
   display:block!important;
   margin-top:5px!important;
 }
+.metal-rate-card .day-change-value{font-weight:750!important;color:var(--muted)!important}
+.metal-rate-card .day-change-value.is-up{color:var(--green)!important}
+.metal-rate-card .day-change-value.is-down{color:var(--red)!important}
+.metal-rate-card .day-change-value.is-flat{color:var(--muted)!important}
