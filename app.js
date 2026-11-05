@@ -10,7 +10,7 @@ function setTheme(t){db.theme=t;persist();themeApply()}
 $('themeToggle').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
 document.querySelectorAll('[data-theme-choice]').forEach(b=>b.onclick=()=>setTheme(b.dataset.themeChoice));
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>{if(db.theme==='system')themeApply()});
-const pages={dashboard:['YOUR FINANCIAL SNAPSHOT','Good day. Here’s your money.'],transactions:['MONEY MANAGEMENT','Transactions'],loans:['BORROWING & REPAYMENTS','Loans & EMI'],reports:['FINANCIAL INSIGHTS','Reports'],markets:['MARKET DATA','Gold, silver & stock markets'],settings:['PREFERENCES','Settings & backup']};
+const pages={dashboard:['YOUR FINANCIAL SNAPSHOT','Good day. Here’s your money.'],transactions:['MONEY MANAGEMENT','Transactions'],loans:['BORROWING & REPAYMENTS','Loans & EMI'],reports:['FINANCIAL INSIGHTS','Reports'],markets:['MARKET DATA','Gold & silver rates'],settings:['PREFERENCES','Settings & backup']};
 function navigate(page){if(!pages[page])page='dashboard';document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));document.querySelectorAll('.nav-link').forEach(b=>b.classList.toggle('active',b.dataset.page===page));$('pageEyebrow').textContent=pages[page][0];$('pageTitle').textContent=pages[page][1];history.replaceState(null,'','#'+page);if(page==='dashboard'||page==='reports')drawChart();if(page==='settings')themeApply()}
 $('nav').addEventListener('click',e=>{let b=e.target.closest('[data-page]');if(b)navigate(b.dataset.page)});
 document.addEventListener('click',e=>{let b=e.target.closest('[data-open]');if(b)navigate(b.dataset.open)});
