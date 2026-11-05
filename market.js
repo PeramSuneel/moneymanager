@@ -82,30 +82,11 @@ function dayChangeFor(key){
 }
 function renderDayChange(id,purity){
  const el=$(id);if(!el)return;const key=purity==='24'?'g24':purity==='22'?'g22':purity==='18'?'g18':'silver',change=dayChangeFor(key);
- if(!change){el.textContent='Day change: unavailable';el.style.color='var(--muted)';return}
+ if(!change){el.textContent='1-day change: unavailable';el.style.color='var(--muted)';return}
  const sign=change.delta>0?'+':change.delta<0?'−':'';
- el.textContent='Day change: '+sign+fmt(Math.abs(change.delta))+' ('+(change.pct>0?'+':'')+change.pct.toFixed(2)+'%)';
+ el.textContent='1-day change: '+sign+fmt(Math.abs(change.delta))+' ('+(change.pct>0?'+':'')+change.pct.toFixed(2)+'%)';
  el.style.color=change.delta>0?'var(--green)':change.delta<0?'var(--red)':'var(--muted)';
 }
-function drawGoldHistory(){
- const dateInput=$('goldHistoryDate');if(!dateInput)return;
- const selected=dateInput.value||localDateString(),latestDaily=goldHistory.filter(x=>x.kind==='daily').sort((a,b)=>a.date.localeCompare(b.date)).at(-1);
- const latestDate=latestDaily?.date||localDateString(),isLatest=selected===latestDate||selected===localDateString();
- let record=goldHistory.find(x=>x.date===selected&&x.kind==='daily');
- const isToday=selected===localDateString();
- const v24=isToday&&rates?.g24?rates.g24:num(record?.g24),v22=isToday&&rates?.g22?rates.g22:num(record?.g22);
- const available=isToday?!!(v24&&v22):!!record;
- const put=(id,value)=>{if($(id))$(id).textContent=value};
- put('goldDate24',available?fmt(v24):'—');put('goldDate22',available?fmt(v22):'—');
- const message=$('goldDateMessage');
- if(message){
-  if(available)message.textContent=(isToday?'Latest published rate':'Published rate for '+new Date(selected+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'}))+' · '+(source||'Goodreturns · Bangalore');
-  else message.textContent='No saved daily rate is available for this date. Daily historical rates are collected when this website is opened and refreshed; dates before your first visit may not be available.';
- }
- const purity=$('goldHistoryPurity')?.value||'24';
- $('goldDateResults')?.classList.toggle('selected-24',purity==='24');
-}
-
 async function refreshRates(){
  if(refreshing)return;refreshing=true;setStatus('Fetching Goodreturns gold and silver rates…');
  try{
@@ -133,5 +114,5 @@ function savePurchase(){const budget=num($('investBudget')?.value),rate=num($('i
 function calculateJewellery(){const rate=num($('jewelRate')?.value),grams=num($('jewelGrams')?.value),wastage=num($('jewelWastage')?.value),making=num($('jewelMaking')?.value),discount=num($('jewelDiscount')?.value),gst=num($('jewelGst')?.value),type=$('jewelMakingType')?.value||'gram',metal=rate*grams,waste=metal*wastage/100,makingCost=type==='gram'?making*grams:metal*making/100,subtotal=metal+waste+makingCost,discountValue=subtotal*discount/100,taxable=Math.max(0,subtotal-discountValue),tax=taxable*gst/100,total=taxable+tax,lines=[['Metal value',metal],['Wastage',waste],['Making charges',makingCost],['Subtotal',subtotal],['Discount',-discountValue],['GST',tax],['Final estimate',total]];if($('jewelBreakdown'))$('jewelBreakdown').innerHTML=lines.map((x,i)=>'<div class="calc-line '+(i===6?'total':'')+'"><span>'+x[0]+'</span><b>'+fmt(x[1])+'</b></div>').join('');if($('jewelTotal'))$('jewelTotal').textContent=fmt(total)}
 $('refreshMarket')?.addEventListener('click',refreshRates);$('saveMetalPurchase')?.addEventListener('click',savePurchase);$('metalPurchaseTable')?.addEventListener('click',e=>{const b=e.target.closest('[data-remove-metal]');if(b){purchases=purchases.filter(p=>p.id!==b.dataset.removeMetal);try{localStorage.setItem('mmMetalPurchases.v1',JSON.stringify(purchases))}catch{}renderPurchases()}});
 ['investMetal','investPurity'].forEach(id=>$(id)?.addEventListener('change',()=>{if($('investRate'))delete $('investRate').dataset.userEdited;syncRates();calculateInvestment()}));['jewelMetal','jewelPurity'].forEach(id=>$(id)?.addEventListener('change',()=>{if($('jewelRate'))delete $('jewelRate').dataset.userEdited;syncRates();calculateJewellery()}));['investBudget','investRate','investGst'].forEach(id=>$(id)?.addEventListener('input',()=>{if(id==='investRate')$('investRate').dataset.userEdited='1';calculateInvestment()}));['jewelRate','jewelGrams','jewelWastage','jewelMaking','jewelDiscount','jewelGst','jewelMakingType'].forEach(id=>$(id)?.addEventListener('input',()=>{if(id==='jewelRate')$('jewelRate').dataset.userEdited='1';calculateJewellery()}));
-renderPurchases();syncRates();calculateInvestment();calculateJewellery();draw();if($('goldHistoryDate')){$('goldHistoryDate').value=localDateString();$('goldHistoryDate').max=localDateString();$('goldHistoryDate').addEventListener('change',drawGoldHistory)}drawGoldHistory();$('goldHistoryPurity')?.addEventListener('change',drawGoldHistory);const openGoldHistory=purity=>{const select=$('goldHistoryPurity');if(select)select.value=purity;const page=document.querySelector('#page-markets');if(page&&!page.classList.contains('active'))document.querySelector('.nav-link[data-page="markets"]')?.click();setTimeout(()=>{$('goldHistoryPanel')?.scrollIntoView({behavior:'smooth',block:'start'});drawGoldHistory()},120)};document.querySelectorAll('[data-gold-purity]').forEach(card=>{const activate=()=>openGoldHistory(card.dataset.goldPurity);card.addEventListener('click',activate);card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate()}})});window.addEventListener('resize',drawGoldHistory);refreshRates();document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshRates()});window.addEventListener('online',refreshRates);setInterval(()=>{if(!document.hidden)refreshRates()},10*60*1000);
+renderPurchases();syncRates();calculateInvestment();calculateJewellery();draw();refreshRates();document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshRates()});window.addEventListener('online',refreshRates);setInterval(()=>{if(!document.hidden)refreshRates()},10*60*1000);
 })();
