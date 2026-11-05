@@ -179,3 +179,80 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
  .nav-utilities .today{font-size:11px!important}
  .nav-utilities .button{font-size:11px!important;padding:9px 11px!important}
 }
+
+
+/* User preference: keep the complete navigation header on ONE horizontal row at every width */
+.site-navigation{
+  display:flex!important;
+  flex-flow:row nowrap!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:clamp(6px,1vw,14px)!important;
+  width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  padding:0 10px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  white-space:nowrap!important;
+  scrollbar-width:thin;
+}
+.nav-topline{
+  display:flex!important;
+  flex:0 0 auto!important;
+  min-width:max-content!important;
+  min-height:58px!important;
+  margin:0!important;
+}
+.site-navigation .brand{display:flex!important;flex-wrap:nowrap!important;white-space:nowrap!important}
+.site-navigation .brand small,.nav-meta{display:none!important}
+.primary-navigation{
+  display:flex!important;
+  flex:0 0 auto!important;
+  flex-flow:row nowrap!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  width:auto!important;
+  min-width:max-content!important;
+  min-height:58px!important;
+  margin:0!important;
+  gap:2px!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+}
+.primary-navigation .nav-link{
+  display:inline-flex!important;
+  flex:0 0 auto!important;
+  white-space:nowrap!important;
+  font-size:clamp(10px,1vw,12px)!important;
+  padding:8px clamp(5px,.7vw,10px)!important;
+  gap:5px!important;
+}
+.nav-utilities{
+  display:flex!important;
+  flex:0 0 auto!important;
+  flex-flow:row nowrap!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  min-height:58px!important;
+  gap:7px!important;
+  padding:0!important;
+  border:0!important;
+  white-space:nowrap!important;
+}
+.nav-utilities .today{display:inline-flex!important;white-space:nowrap!important;font-size:11px!important}
+.nav-utilities .icon-button{flex:0 0 auto!important;width:34px!important;height:34px!important}
+.nav-utilities .button{flex:0 0 auto!important;white-space:nowrap!important;font-size:11px!important;padding:8px 10px!important}
+@media(max-width:560px){
+  .site-navigation{gap:5px!important;padding-inline:8px!important;min-height:52px!important}
+  .nav-topline,.primary-navigation,.nav-utilities{min-height:52px!important}
+  .site-navigation .brand-icon{width:29px!important;height:29px!important;font-size:17px!important}
+  .site-navigation .brand b{font-size:12px!important}
+  .primary-navigation{gap:1px!important}
+  .primary-navigation .nav-link{font-size:10px!important;padding:7px 6px!important;gap:3px!important}
+  .primary-navigation .nav-link i{font-size:12px!important}
+  .nav-utilities{gap:5px!important}
+  .nav-utilities .today{font-size:10px!important}
+  .nav-utilities .icon-button{width:30px!important;height:30px!important}
+  .nav-utilities .button{font-size:10px!important;padding:7px 8px!important}
+}
