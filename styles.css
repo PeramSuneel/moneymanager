@@ -256,3 +256,35 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
   .nav-utilities .icon-button{width:30px!important;height:30px!important}
   .nav-utilities .button{font-size:10px!important;padding:7px 8px!important}
 }
+
+
+/* Interactive category spending analysis */
+.spending-analysis-panel{margin-bottom:18px;padding:clamp(15px,2vw,24px)}
+.spending-filters{display:flex;align-items:end;flex-wrap:wrap;gap:12px;margin:16px 0 20px}
+.spending-filters .form-field{display:grid;gap:5px;min-width:150px}
+.spending-filters .form-field span{font-size:11px;color:var(--muted);font-weight:700}
+.spending-filters input,.spending-filters select{min-height:40px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--text);font:inherit}
+.spending-analysis-grid{display:grid;grid-template-columns:minmax(280px,.9fr) minmax(0,1.1fr);gap:22px;align-items:start}
+.spending-chart-area{display:grid;grid-template-columns:minmax(210px,1fr);justify-items:center;gap:15px;min-width:0}
+.spending-chart-wrap{position:relative;width:min(100%,340px);aspect-ratio:1}
+#spendingDonut{width:100%;height:100%;display:block;cursor:pointer;touch-action:pan-y}
+.spending-chart-center{position:absolute;inset:31%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;overflow:hidden}
+.spending-chart-center small{font-size:9px;letter-spacing:1px;color:var(--muted);font-weight:800}
+.spending-chart-center strong{font-size:clamp(16px,2.3vw,23px);line-height:1.25;overflow-wrap:anywhere}
+.spending-chart-center span{font-size:10px;color:var(--muted);margin-top:3px}
+.spending-legend{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.spending-legend-item{display:grid;grid-template-columns:10px minmax(0,1fr) auto;align-items:center;gap:7px;text-align:left;padding:8px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--text);cursor:pointer;min-width:0;transition:background .16s,border-color .16s,transform .16s}
+.spending-legend-item:hover,.spending-legend-item.selected{border-color:var(--cat-color);background:color-mix(in srgb,var(--cat-color) 12%,var(--surface));transform:translateY(-1px)}
+.spending-legend-item i{width:9px;height:9px;border-radius:50%;background:var(--cat-color)}
+.spending-legend-item span{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.spending-legend-item b{font-size:10px;white-space:nowrap}
+.spending-legend-item small{grid-column:2/4;color:var(--muted);font-size:9px}
+.spending-detail{min-width:0;padding:15px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
+.spending-detail-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.spending-detail-head h3{font-size:18px;margin:3px 0}
+.spending-detail-head>strong{font-size:19px;white-space:nowrap}
+.spending-muted{font-size:11px;color:var(--muted);margin:6px 0 13px}
+.spending-detail .table-scroll{max-height:340px;overflow:auto}
+.spending-detail table{font-size:11px}
+@media(max-width:850px){.spending-analysis-grid{grid-template-columns:1fr}.spending-chart-area{max-width:520px;width:100%;margin-inline:auto}.spending-chart-wrap{width:min(100%,310px)}}
+@media(max-width:480px){.spending-filters{display:grid;grid-template-columns:1fr 1fr;width:100%}.spending-filters .form-field{min-width:0}.spending-legend{grid-template-columns:1fr}.spending-detail{padding:11px}.spending-detail-head>strong{font-size:16px}}
