@@ -413,22 +413,6 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 }
 
 
-/* Precious-metal one-day movement: clearly visible direction colours */
-.metal-rate-card small.day-change-up{color:var(--green)!important;font-weight:800!important;display:block;margin-top:5px}
-.metal-rate-card small.day-change-down{color:var(--red)!important;font-weight:800!important;display:block;margin-top:5px}
-.metal-rate-card small.day-change-flat,.metal-rate-card small.day-change-unavailable{color:var(--muted)!important;font-weight:650!important;display:block;margin-top:5px}
-
-
-/* Metal movement: keep one-day change text neutral; colour today's rate itself */
-.metal-rate-card small.day-change-up{color:var(--green)!important;font-weight:750!important;display:block;margin-top:5px}
-.metal-rate-card small.day-change-down{color:var(--red)!important;font-weight:750!important;display:block;margin-top:5px}
-.metal-rate-card small.day-change-flat,.metal-rate-card small.day-change-unavailable{color:var(--muted)!important;font-weight:650!important;display:block;margin-top:5px}
-.metal-rate-card strong.rate-change-up{color:var(--green)!important}
-.metal-rate-card strong.rate-change-down{color:var(--red)!important}
-.metal-rate-card strong.rate-change-flat{color:var(--text)!important}
-.metal-rate-card strong.rate-change-unavailable{color:var(--text)!important}
-
-
 /* Refined navigation: restrained, consistent outline icons and clear labels */
 .primary-navigation .nav-link{
   display:inline-flex!important;align-items:center!important;justify-content:center!important;
@@ -468,4 +452,22 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 #dashGoldMove,#dashGold22Move,#dashGold18Move,#dashSilverMove{
   color:var(--muted)!important;
   font-weight:650!important;
+}
+
+/* Single source of truth for precious-metal movement colours.
+   Rate numbers carry direction; the one-day caption/value always stays neutral. */
+.metal-rate-card strong.rate-change-up{color:var(--green)!important}
+.metal-rate-card strong.rate-change-down{color:var(--red)!important}
+.metal-rate-card strong.rate-change-flat,
+.metal-rate-card strong.rate-change-unavailable{color:var(--text)!important}
+.metal-rate-card small[id$="Change"],
+.metal-rate-card small[id$="Move"],
+.metal-rate-card small.day-change-up,
+.metal-rate-card small.day-change-down,
+.metal-rate-card small.day-change-flat,
+.metal-rate-card small.day-change-unavailable{
+  color:var(--muted)!important;
+  font-weight:650!important;
+  display:block!important;
+  margin-top:5px!important;
 }
