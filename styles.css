@@ -474,6 +474,9 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
   margin-top:5px!important;
 }
 .metal-rate-card .day-change-value{font-weight:750!important;color:var(--muted)!important}
+/* Keep the one-day label and its amount together on a single line. */
+.metal-rate-card small[id$="Change"],
+.metal-rate-card small[id$="Move"]{white-space:nowrap!important;}
 .metal-rate-card .day-change-value.is-up{color:var(--green)!important}
 .metal-rate-card .day-change-value.is-down{color:var(--red)!important}
 .metal-rate-card .day-change-value.is-flat{color:var(--muted)!important}
