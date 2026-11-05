@@ -342,3 +342,28 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
  .nav-utilities .icon-button{width:29px!important;height:29px!important;font-size:14px!important}
  .nav-utilities .button{font-size:10px!important;padding:7px 8px!important}
 }
+
+
+/* Mobile header refinement: hamburger left, mathematically centred brand, actions right */
+@media(max-width:900px){
+ .site-navigation{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;grid-template-areas:"menu brand tools"!important;gap:6px!important;padding-inline:10px!important;}
+ .menu-toggle{grid-area:menu!important;justify-self:start!important;}
+ .nav-topline{grid-area:brand!important;justify-self:center!important;min-width:0!important;}
+ .site-navigation .brand{justify-content:center!important;}
+ .site-navigation .brand b{font-size:14px!important;}
+ .nav-utilities{grid-area:tools!important;justify-self:end!important;min-width:0!important;gap:6px!important;}
+ .nav-utilities .today{font-size:10px!important;}
+}
+@media(max-width:560px){
+ .site-navigation{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;grid-template-areas:"menu brand tools"!important;min-height:56px!important;padding-inline:9px!important;}
+ .nav-topline,.nav-utilities{min-height:54px!important;}
+ .site-navigation .brand{gap:5px!important;}
+ .site-navigation .brand-icon{width:27px!important;height:27px!important;font-size:16px!important;}
+ .site-navigation .brand b{font-size:11px!important;}
+ .nav-utilities{gap:4px!important;}
+ .nav-utilities .today{font-size:9px!important;max-width:56px!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+ .nav-utilities .icon-button{width:28px!important;height:28px!important;}
+ .nav-utilities .button{font-size:0!important;width:30px!important;height:30px!important;padding:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;}
+ .nav-utilities .button::first-letter{font-size:16px!important;}
+}
+@media(max-width:360px){.nav-utilities .today{display:none!important}.site-navigation .brand b{font-size:10px!important}}
