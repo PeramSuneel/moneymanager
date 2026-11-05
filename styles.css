@@ -406,41 +406,14 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 #dashboardMetalContent[hidden]{display:none!important}
 @media(max-width:560px){.dashboard-metals{margin-top:13px}.metal-collapse-toggle{width:32px;height:32px;flex-basis:32px}}
 
-/* Gold history chart */
-.history-purity{display:grid;gap:4px;font-size:10px;color:var(--muted);font-weight:700}
-.history-purity select{min-width:76px;padding:7px 26px 7px 9px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--text)}
-.gold-history-panel{margin-bottom:15px}
-.gold-history-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0 14px}
-.gold-history-summary>div{min-width:0;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface-2)}
-.gold-history-summary small{display:block;color:var(--muted);font-size:10px}
-.gold-history-summary strong{display:block;margin-top:4px;font-size:clamp(14px,1.7vw,19px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gold-history-chart-wrap{height:260px;position:relative;min-width:0;margin:4px 0 16px}
-#goldHistoryChart{width:100%;height:100%;display:block}
-.gold-history-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px;color:var(--muted);font-size:12px;pointer-events:none}
-.gold-history-empty[hidden]{display:none}
-.gold-history-table-heading{margin-top:10px}
-@media(max-width:560px){.gold-history-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.gold-history-chart-wrap{height:220px}.gold-history-summary>div{padding:9px}.gold-history-summary strong{font-size:16px}}
 /* Hamburger menu: one-line, left-aligned icon and tab label */
 @media(max-width:900px){
  .primary-navigation.menu-open .nav-link{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;text-align:left!important;white-space:nowrap!important;gap:10px!important;min-height:44px!important;padding:10px 13px!important}
  .primary-navigation.menu-open .nav-link i{display:inline-flex!important;flex:0 0 22px!important;width:22px!important;align-items:center!important;justify-content:center!important;text-align:center!important}
 }
 
-/* Interactive gold purity cards and range selector */
-.gold-rate-clickable{cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
-.gold-rate-clickable:hover,.gold-rate-clickable:focus-visible{transform:translateY(-2px);outline:2px solid var(--gold);outline-offset:2px;box-shadow:var(--shadow)}
-.gold-history-range{display:flex;gap:6px;margin:4px 0 12px;padding:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;width:max-content}
-.history-range{border:0;border-radius:8px;padding:8px 17px;background:transparent;color:var(--muted);font-weight:750;font-size:12px;cursor:pointer}
-.history-range.active{background:var(--gold-soft);color:var(--gold);box-shadow:0 1px 3px rgba(0,0,0,.07)}
-@media(max-width:560px){.history-range{padding:8px 15px;flex:1}.gold-history-range{width:100%}}
 
-/* Compact date-based gold rate lookup */
-.gold-date-lookup{display:grid;gap:7px;margin:14px 0 12px;max-width:420px}
-.gold-date-lookup label{font-size:12px;font-weight:700;color:var(--muted)}
-.gold-date-lookup input{width:100%;min-height:42px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--text);font:inherit}
-.gold-date-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
-.gold-date-result{padding:15px;border:1px solid color-mix(in srgb,var(--gold) 28%,var(--line));border-radius:13px;background:color-mix(in srgb,var(--gold) 8%,var(--surface))}
-.gold-date-result small{display:block;color:var(--muted);font-size:11px}
-.gold-date-result strong{display:block;margin-top:6px;font-size:clamp(19px,2.3vw,25px);font-weight:750}
-.gold-date-message{font-size:12px;color:var(--muted);margin:8px 0}
-@media(max-width:420px){.gold-date-results{gap:7px}.gold-date-result{padding:11px}.gold-date-result strong{font-size:18px}}
+/* Precious-metal one-day movement: clearly visible direction colours */
+.metal-rate-card small.day-change-up{color:var(--green)!important;font-weight:800!important;display:block;margin-top:5px}
+.metal-rate-card small.day-change-down{color:var(--red)!important;font-weight:800!important;display:block;margin-top:5px}
+.metal-rate-card small.day-change-flat,.metal-rate-card small.day-change-unavailable{color:var(--muted)!important;font-weight:650!important;display:block;margin-top:5px}
