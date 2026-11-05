@@ -44,3 +44,47 @@
  .primary-navigation .nav-link{padding:9px 10px;font-size:10px;gap:6px}
  .nav-meta small{display:none}
 }
+
+/* One-line premium navigation */
+.site-navigation{display:flex;align-items:center;gap:clamp(14px,2vw,30px);min-height:66px;padding:0 clamp(18px,3vw,42px)}
+.nav-topline{flex:0 0 auto;min-height:64px;margin:0}
+.site-navigation .brand{padding:0}
+.site-navigation .brand small{display:none}
+.nav-meta{display:none}
+.primary-navigation{flex:1;min-width:0;max-width:none;min-height:64px;margin:0;justify-content:flex-end;gap:4px;overflow-x:auto}
+.primary-navigation .nav-link{padding:9px 12px}
+@media(max-width:900px){
+ .site-navigation{gap:10px;padding:0 12px;min-height:60px}
+ .nav-topline{min-height:58px}
+ .site-navigation .brand b{font-size:13px}
+ .primary-navigation{min-height:58px;justify-content:flex-start}
+ .primary-navigation .nav-link{padding:8px 9px;font-size:10px}
+}
+@media(max-width:560px){
+ .site-navigation{gap:7px;min-height:56px;padding:0 8px}
+ .nav-topline{min-height:54px}
+ .site-navigation .brand-icon{width:32px;height:32px}
+ .site-navigation .brand b{font-size:11px}
+ .primary-navigation{min-height:54px;gap:2px}
+ .primary-navigation .nav-link{padding:7px 8px;font-size:9px}
+ .primary-navigation .nav-link i{font-size:12px}
+}
+/* Color language by financial meaning */
+.market-strip{background:linear-gradient(135deg,var(--gold-soft),var(--surface));border:1px solid color-mix(in srgb,var(--gold) 34%,var(--line))}
+.market-strip .market-strip-head .eyebrow{color:var(--gold)}
+.market-strip .gold-rate{background:color-mix(in srgb,var(--gold-soft) 72%,var(--surface));border-color:color-mix(in srgb,var(--gold) 35%,var(--line));border-top:3px solid var(--gold)}
+.metric-grid .metric-card:nth-child(1){background:linear-gradient(145deg,var(--green-soft),var(--surface));border-color:color-mix(in srgb,var(--green) 28%,var(--line))}
+.metric-grid .metric-card:nth-child(2){background:linear-gradient(145deg,var(--red-soft),var(--surface));border-color:color-mix(in srgb,var(--red) 28%,var(--line))}
+.metric-grid .metric-card:nth-child(3){background:linear-gradient(145deg,var(--gold-soft),var(--surface));border-color:color-mix(in srgb,var(--gold) 28%,var(--line))}
+.metric-icon.income{background:var(--green-soft);color:var(--green)}
+.metric-icon.expense{background:var(--red-soft);color:var(--red)}
+.metric-icon.loan{background:var(--gold-soft);color:var(--gold)}
+.nav-link[data-page="dashboard"].active{background:var(--gold-soft);color:var(--gold)}
+.nav-link[data-page="transactions"].active{background:var(--green-soft);color:var(--green)}
+.nav-link[data-page="loans"].active{background:var(--red-soft);color:var(--red)}
+.nav-link[data-page="markets"].active{background:var(--gold-soft);color:var(--gold)}
+.nav-link[data-page="reports"].active{background:#f0edfa;color:#8065b4}
+html[data-theme="dark"] .nav-link[data-page="reports"].active{background:#302942;color:#c1a9f0}
+.nav-link[data-page="settings"].active{background:var(--surface-2);color:var(--text)}
+.amount-positive,.type-pill.income{color:var(--green)!important}
+.amount-negative,.type-pill.expense{color:var(--red)!important}
