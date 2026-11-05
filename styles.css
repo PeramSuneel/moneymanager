@@ -455,14 +455,12 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 }
 
 /* Precious metals: neutral rates and labels; colour only the daily change amount. */
-.metal-rate-card strong{
-  color:var(--muted)!important;
-}
+.metal-rate-card strong,
 .metal-rate-card strong.rate-change-up,
 .metal-rate-card strong.rate-change-down,
 .metal-rate-card strong.rate-change-flat,
 .metal-rate-card strong.rate-change-unavailable{
-  color:var(--muted)!important;
+  color:var(--text)!important;
 }
 .metal-rate-card small[id$="Change"],
 .metal-rate-card small[id$="Move"],
