@@ -425,3 +425,11 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
  .primary-navigation.menu-open .nav-link{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;text-align:left!important;white-space:nowrap!important;gap:10px!important;min-height:44px!important;padding:10px 13px!important}
  .primary-navigation.menu-open .nav-link i{display:inline-flex!important;flex:0 0 22px!important;width:22px!important;align-items:center!important;justify-content:center!important;text-align:center!important}
 }
+
+/* Interactive gold purity cards and range selector */
+.gold-rate-clickable{cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.gold-rate-clickable:hover,.gold-rate-clickable:focus-visible{transform:translateY(-2px);outline:2px solid var(--gold);outline-offset:2px;box-shadow:var(--shadow)}
+.gold-history-range{display:flex;gap:6px;margin:4px 0 12px;padding:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;width:max-content}
+.history-range{border:0;border-radius:8px;padding:8px 17px;background:transparent;color:var(--muted);font-weight:750;font-size:12px;cursor:pointer}
+.history-range.active{background:var(--gold-soft);color:var(--gold);box-shadow:0 1px 3px rgba(0,0,0,.07)}
+@media(max-width:560px){.history-range{padding:8px 15px;flex:1}.gold-history-range{width:100%}}
