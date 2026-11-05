@@ -8,12 +8,15 @@ async function readText(url){const res=await fetch(url,{cache:'no-store',headers
 async function readJson(url){const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw Error('Source returned '+res.status);return res.json()}
 function parseRates(page){
  const lines=page.split(/\r?\n/);
- for(const line of lines){if(/^\s*\|?\s*1\s*\|/.test(line)&&line.includes('₹')){const values=[...line.matchAll(/₹\s*([\d,]+)/g)].map(m=>num(m[1].replace(/,/g,'')));if(values.length>=3&&values[0]>1000)return {g24:values[0],g22:values[1],g18:values[2]}}}
- const patterns=[
-  [/24K\s*(?:Gold|\b)[^\n₹]{0,35}₹\s*([\d,]+)/i,/22K\s*(?:Gold|\b)[^\n₹]{0,35}₹\s*([\d,]+)/i,/18K\s*(?:Gold|\b)[^\n₹]{0,35}₹\s*([\d,]+)/i],
-  [/24K\s*Gold\s*\/g\s*₹?\s*([\d,]+)/i,/22K\s*Gold\s*\/g\s*₹?\s*([\d,]+)/i,/18K\s*Gold\s*\/g\s*₹?\s*([\d,]+)/i]
- ];
- for(const group of patterns){const vals=group.map(p=>{const m=page.match(p);return m?num(m[1].replace(/,/g,'')):0});if(vals.every(v=>v>1000&&v<100000))return {g24:vals[0],g22:vals[1],g18:vals[2]}}
+ for(const line of lines){
+  if(/^\s*\|?\s*1\s*\|/.test(line)&&line.includes('₹')){
+   const cells=[...line.matchAll(/₹\s*([\d,]+)(?:\s*\(([+-]?[\d,]+)\))?/g)];
+   const vals=cells.map(m=>num(m[1].replace(/,/g,'')));
+   if(vals.length>=3&&vals[0]>1000&&vals[1]>1000&&vals[2]>1000){
+    return {g24:vals[0],g22:vals[1],g18:vals[2],change24:cells[0][2]===undefined?null:num(cells[0][2].replace(/,/g,'')),change22:cells[1][2]===undefined?null:num(cells[1][2].replace(/,/g,'')),change18:cells[2][2]===undefined?null:num(cells[2][2].replace(/,/g,''))};
+   }
+  }
+ }
  throw Error('Goodreturns response received, but its gold-rate table could not be recognised');
 }
 function parseGoldHistory(page){
@@ -41,7 +44,18 @@ function parseGoldHistory(page){
  return rows.sort((a,b)=>a.date.localeCompare(b.date));
 }
 function setStatus(s){['metalStatus','metalFreshness','dashMetalFreshness'].forEach(id=>{if($(id))$(id).textContent=s})}
-function draw(){if(!rates)return;[['gold24',rates.g24],['gold22',rates.g22],['gold18',rates.g18],['dashGold24',rates.g24],['dashGold22',rates.g22]].forEach(([id,v])=>{if($(id))$(id).textContent=fmt(v)});if(rates.silver){[['silverGram',rates.silver],['dashSilver',rates.silver]].forEach(([id,v])=>{if($(id))$(id).textContent=fmt(v)})}['metalSource','dashMetalSource'].forEach(id=>{if($(id))$(id).textContent=source});['metalFreshness','dashMetalFreshness'].forEach(id=>{if($(id))$(id).textContent='Goodreturns updated: '+displayTime(stamp)});renderDayChange('gold24Change','24');renderDayChange('gold22Change','22');renderDayChange('gold18Change','18');renderDayChange('dashGoldMove','24');renderDayChange('dashGold22Move','22');renderDayChange('silverChange','silver');renderDayChange('dashSilverMove','silver');syncRates();calculateInvestment();calculateJewellery()}
+function draw(){if(!rates)return;[['gold24',rates.g24],['gold22',rates.g22],['gold18',rates.g18],['dashGold24',rates.g24],['dashGold22',rates.g22]].forEach(([id,v])=>{if($(id))$(id).textContent=fmt(v)});if(rates.silver){[['silverGram',rates.silver],['dashSilver',rates.silver]].forEach(([id,v])=>{if($(id))$(id).textContent=fmt(v)})}['metalSource','dashMetalSource'].forEach(id=>{if($(id))$(id).textContent=source});['metalFreshness','dashMetalFreshness'].forEach(id=>{if($(id))$(id).textContent='Goodreturns updated: '+displayTime(stamp)});renderDayChange('gold24Change','24');renderDayChange('gold22Change','22');renderDayChange('gold18Change','18');renderDayChange('dashGoldMove','24');renderDayChange('dashGold22Move','22');renderDayChange('dashGold18Move','18');renderDayChange('silverChange','silver');renderDayChange('dashSilverMove','silver');syncRates();calculateInvestment();calculateJewellery()}
+function parseSilverChange(page){
+ const lines=page.split(/\r?\n/);
+ for(const line of lines){
+  if(/^\s*\|?\s*1\s*\|/.test(line)&&line.includes('₹')){
+   const m=line.match(/\|\s*1\s*\|\s*₹\s*[\d,]+(?:\.\d+)?\s*\|\s*₹\s*[\d,]+(?:\.\d+)?\s*\|\s*([+−-])?\s*₹?\s*([\d,]+(?:\.\d+)?)/i);
+   if(m)return num(m[2].replace(/,/g,''))*(m[1]==='-'||m[1]==='−'?-1:1);
+  }
+ }
+ const m=page.match(/Silver\s*\/g[^\n₹]{0,40}₹\s*[\d,]+[^\n+−-]{0,12}([+−-])\s*₹?\s*([\d,]+)/i);
+ return m?num(m[2].replace(/,/g,''))*(m[1]==='-'||m[1]==='−'?-1:1):null;
+}
 function parseSilverRate(page){const lines=page.split(/\r?\n/);for(const line of lines){if(/^\s*\|?\s*1\s*\|/.test(line)&&line.includes('₹')){const m=line.match(/₹\s*([\d,]+(?:\.\d+)?)/);if(m){const v=Number(m[1].replace(/,/g,''));if(v>50&&v<1000)return v}}}const patterns=[/silver price in Bangalore[^₹]{0,100}₹\s*([\d,]+(?:\.\d+)?)/i,/Silver\s*per gram[^₹]{0,50}₹\s*([\d,]+(?:\.\d+)?)/i];for(const p of patterns){const m=page.match(p);if(m){const v=Number(m[1].replace(/,/g,''));if(v>50&&v<1000)return v}}throw Error('Goodreturns silver-rate table could not be recognised')}
 async function fetchReaderPage(path){let lastError;for(const prefix of ['https://r.jina.ai/http://','https://r.jina.ai/https://']){try{const page=await readText(prefix+'www.goodreturns.in/'+path);if(page.length>250)return page}catch(e){lastError=e}}throw lastError||Error('Reader did not return page content')}
 let goldHistory=[];
@@ -84,8 +98,14 @@ function recordDailyMetalRates(current){
  try{localStorage.setItem('mmDailyMetalRates.v1',JSON.stringify(dailyMetalRates))}catch{}
 }
 function dayChangeFor(key){
+ if(!rates||!num(rates[key]))return null;
+ const changeKey=key==='g24'?'change24':key==='g22'?'change22':key==='g18'?'change18':'changeSilver';
+ const published=rates[changeKey];
+ if(published!==null&&published!==undefined&&Number.isFinite(Number(published))){
+  const delta=Number(published),previous=num(rates[key])-delta;
+  return {delta,pct:previous?delta/previous*100:0};
+ }
  const history=dailyMetalRates.filter(x=>num(x[key])>0).sort((a,b)=>a.date.localeCompare(b.date));
- if(!history.length||!num(rates?.[key]))return null;
  const today=localDateString(),current=num(rates[key]);
  const prior=history.filter(x=>x.date<today).slice(-1)[0]||history.filter(x=>x.date!==today).slice(-1)[0];
  if(!prior)return null;
@@ -97,7 +117,7 @@ function renderDayChange(id,purity){
  const key=purity==='24'?'g24':purity==='22'?'g22':purity==='18'?'g18':'silver';
  const change=dayChangeFor(key);
  el.classList.remove('day-change-up','day-change-down','day-change-flat','day-change-unavailable');
- if(!change){el.textContent='1-day change: collecting daily rates';el.classList.add('day-change-unavailable');return}
+ if(!change){el.textContent='1-day change: not published';el.classList.add('day-change-unavailable');return}
  const sign=change.delta>0?'+':change.delta<0?'−':'';
  el.textContent='1-day change: '+sign+fmt(Math.abs(change.delta))+' ('+(change.pct>0?'+':'')+change.pct.toFixed(2)+'%)';
  el.classList.add(change.delta>0?'day-change-up':change.delta<0?'day-change-down':'day-change-flat');
@@ -106,7 +126,7 @@ async function refreshRates(){
  if(refreshing)return;refreshing=true;setStatus('Fetching Goodreturns gold and silver rates…');
  try{
   const [goldPage,silverPage]=await Promise.all([fetchReaderPage('gold-rates/bangalore.html'),fetchReaderPage('silver-rates/bangalore.html')]);
-  const parsed=parseRates(goldPage),silver=parseSilverRate(silverPage);rates={...parsed,silver};
+  const parsed=parseRates(goldPage),silver=parseSilverRate(silverPage),silverChange=parseSilverChange(silverPage);rates={...parsed,silver,changeSilver:silverChange};
   const history=parseGoldHistory(goldPage),silverHistory=parseSilverHistory(silverPage);
   mergePublishedMetalHistory(history,silverHistory);
   const datePattern=/(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+20\d{2}|\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+20\d{2}/i;
@@ -119,7 +139,7 @@ async function refreshRates(){
   draw();setStatus('Successfully updated gold and silver from Goodreturns · '+displayTime(stamp));
  }catch(e){
   setStatus('Could not update both metal rates: '+(e?.message||'Network or proxy error')+'. Showing last saved rates if available.');
-  if(rates)draw();else ['gold24','gold22','gold18','dashGold24','dashGold22','silverGram','dashSilver'].forEach(id=>{if($(id))$(id).textContent='Unavailable'});
+  if(rates)draw();else ['gold24','gold22','gold18','dashGold24','dashGold22','dashGold18','silverGram','dashSilver'].forEach(id=>{if($(id))$(id).textContent='Unavailable'});
  }finally{refreshing=false}
 }
 function selectedRate(metal,purity){if(metal==='silver')return rates?.silver||0;return purity==='18'?(rates?.g18||0):purity==='22'?(rates?.g22||0):(rates?.g24||0)}
