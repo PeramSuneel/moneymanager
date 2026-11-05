@@ -461,3 +461,11 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
   display:block;
   margin-top:5px;
 }
+
+
+/* Hard-target all precious-metal one-day change labels and values (dashboard + markets) */
+#gold24Change,#gold22Change,#gold18Change,#silverChange,
+#dashGoldMove,#dashGold22Move,#dashGold18Move,#dashSilverMove{
+  color:var(--muted)!important;
+  font-weight:650!important;
+}
