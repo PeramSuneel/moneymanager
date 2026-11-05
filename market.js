@@ -1,6 +1,6 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id),fmt=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format(Number(n)||0),num=n=>Number(n)||0;
-const PREF='mmMarketPrefs.v1';let prefs={city:'Bengaluru',nebulaKey:'',rates:null};try{prefs={...prefs,...JSON.parse(localStorage.getItem(PREF)||'{}')}}catch{}
+const PREF='mmMarketPrefs.v1';let prefs={city:'Bangalore',nebulaKey:'',rates:null};try{prefs={...prefs,...JSON.parse(localStorage.getItem(PREF)||'{}')}}catch{}
 let rates=null,rateSource='',rateTime='',lastFetch=0,chartLoaded=false;
 function savePrefs(){try{localStorage.setItem(PREF,JSON.stringify({city:prefs.city,nebulaKey:prefs.nebulaKey}))}catch{}}
 function citySync(){['metalCity','dashMetalCity'].forEach(id=>{let e=$(id);if(e)e.value=prefs.city})}
@@ -35,5 +35,6 @@ if($('loadStockChart'))$('loadStockChart').onclick=loadChart;
 citySync();syncCalcRates();loadTicker();fetchMetals(true);loadChart();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)fetchMetals(false)});
 window.addEventListener('online',()=>fetchMetals(true));
+setInterval(()=>{if(!document.hidden)fetchMetals(false)},60000);
 window.addEventListener('storage',e=>{if(e.key===PREF){try{prefs={...prefs,...JSON.parse(e.newValue||'{}')}}catch{}citySync();fetchMetals(true)}});
 })();
