@@ -126,8 +126,8 @@ function renderDayChange(id,purity){
  el.classList.remove('day-change-up','day-change-down','day-change-flat','day-change-unavailable');
  if(!change){el.textContent='1-day change: not published';el.classList.add('day-change-unavailable');return}
  const sign=change.delta>0?'+':change.delta<0?'−':'';
- el.textContent='1-day change: '+sign+fmt(Math.abs(change.delta))+' ('+(change.pct>0?'+':'')+change.pct.toFixed(2)+'%)';
- el.classList.add('day-change-flat');
+ el.textContent='1-day change: '+sign+fmt(Math.abs(change.delta));
+ el.classList.add(change.delta>0?'day-change-up':change.delta<0?'day-change-down':'day-change-flat');
 }
 async function refreshRates(){
  if(refreshing)return;refreshing=true;setStatus('Fetching Goodreturns gold and silver rates…');
