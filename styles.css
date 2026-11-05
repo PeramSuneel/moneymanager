@@ -367,3 +367,31 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
  .nav-utilities .button::first-letter{font-size:16px!important;}
 }
 @media(max-width:360px){.nav-utilities .today{display:none!important}.site-navigation .brand b{font-size:10px!important}}
+
+
+/* Final compact mobile header: one row, balanced centre title, accessible quick actions */
+@media(max-width:560px){
+  .site-navigation{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+    grid-template-areas:"menu brand tools"!important;
+    align-items:center!important;
+    gap:6px!important;
+    min-height:56px!important;
+    padding:0 9px!important;
+    overflow:visible!important;
+  }
+  .menu-toggle{grid-area:menu!important;display:flex!important;justify-self:start!important}
+  .nav-topline{grid-area:brand!important;justify-self:center!important;min-width:0!important;min-height:54px!important}
+  .site-navigation .brand{justify-content:center!important;gap:5px!important}
+  .site-navigation .brand b{font-size:12px!important;white-space:nowrap!important}
+  .nav-utilities{grid-area:tools!important;justify-self:end!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;min-width:0!important;min-height:54px!important;gap:5px!important}
+  .nav-utilities .today{display:inline-flex!important;max-width:56px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:9px!important}
+  .nav-utilities .icon-button{width:29px!important;height:29px!important;flex:0 0 29px!important;font-size:14px!important}
+  #quickAdd{width:30px!important;height:30px!important;min-width:30px!important;flex:0 0 30px!important;padding:0!important;font-size:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
+  #quickAdd::before{content:"+";font-size:20px!important;line-height:1!important}
+}
+@media(max-width:390px){
+  .nav-utilities .today{display:none!important}
+  .site-navigation .brand b{font-size:11px!important}
+}
