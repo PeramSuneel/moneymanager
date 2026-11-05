@@ -433,3 +433,14 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 .history-range{border:0;border-radius:8px;padding:8px 17px;background:transparent;color:var(--muted);font-weight:750;font-size:12px;cursor:pointer}
 .history-range.active{background:var(--gold-soft);color:var(--gold);box-shadow:0 1px 3px rgba(0,0,0,.07)}
 @media(max-width:560px){.history-range{padding:8px 15px;flex:1}.gold-history-range{width:100%}}
+
+/* Compact date-based gold rate lookup */
+.gold-date-lookup{display:grid;gap:7px;margin:14px 0 12px;max-width:420px}
+.gold-date-lookup label{font-size:12px;font-weight:700;color:var(--muted)}
+.gold-date-lookup input{width:100%;min-height:42px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--text);font:inherit}
+.gold-date-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+.gold-date-result{padding:15px;border:1px solid color-mix(in srgb,var(--gold) 28%,var(--line));border-radius:13px;background:color-mix(in srgb,var(--gold) 8%,var(--surface))}
+.gold-date-result small{display:block;color:var(--muted);font-size:11px}
+.gold-date-result strong{display:block;margin-top:6px;font-size:clamp(19px,2.3vw,25px);font-weight:750}
+.gold-date-message{font-size:12px;color:var(--muted);margin:8px 0}
+@media(max-width:420px){.gold-date-results{gap:7px}.gold-date-result{padding:11px}.gold-date-result strong{font-size:18px}}
