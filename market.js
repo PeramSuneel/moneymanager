@@ -62,6 +62,19 @@ function mergeGoldHistory(incoming,liveRates,publishedDateText){
 function localDateString(date=new Date()){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')}
 let dailyMetalRates=[];
 try{const saved=JSON.parse(localStorage.getItem('mmDailyMetalRates.v1')||'[]');if(Array.isArray(saved))dailyMetalRates=saved}catch{}
+function parseSilverHistory(page){
+ const months={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11},rows=[];
+ const re=/\|\s*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(\d{1,2}),?\s+(20\d{2})\s*\|\s*₹\s*([\d,]+(?:\.\d+)?)\s*\|/gi;
+ let m;while((m=re.exec(page))!==null){const mi=months[m[1].slice(0,3).toLowerCase()],date=[m[3],String(mi+1).padStart(2,'0'),String(m[2]).padStart(2,'0')].join('-');const value=num(m[4]);if(value>50&&value<10000)rows.push({date,silver:value/10})}
+ return rows;
+}
+function mergePublishedMetalHistory(goldRows,silverRows){
+ const map=new Map(dailyMetalRates.map(x=>[x.date,x]));
+ for(const row of goldRows||[]){if(!row.date||!row.g24||!row.g22)continue;const old=map.get(row.date)||{};map.set(row.date,{...old,date:row.date,g24:num(row.g24),g22:num(row.g22),g18:num(row.g18)||num(row.g24)*.75})}
+ for(const row of silverRows||[]){if(!row.date||!row.silver)continue;const old=map.get(row.date)||{};map.set(row.date,{...old,date:row.date,silver:num(row.silver)})}
+ dailyMetalRates=[...map.values()].sort((a,b)=>a.date.localeCompare(b.date)).slice(-400);
+ try{localStorage.setItem('mmDailyMetalRates.v1',JSON.stringify(dailyMetalRates))}catch{}
+}
 function recordDailyMetalRates(current){
  if(![current.g24,current.g22,current.g18,current.silver].every(v=>num(v)>0))return;
  const date=localDateString();
@@ -72,9 +85,11 @@ function recordDailyMetalRates(current){
 }
 function dayChangeFor(key){
  const history=dailyMetalRates.filter(x=>num(x[key])>0).sort((a,b)=>a.date.localeCompare(b.date));
- if(history.length<2)return null;
- const current=num(rates?.[key])||num(history[history.length-1][key]),previous=num(history[history.length-2][key]);
- const delta=current-previous,pct=previous?delta/previous*100:0;
+ if(!history.length||!num(rates?.[key]))return null;
+ const today=localDateString(),current=num(rates[key]);
+ const prior=history.filter(x=>x.date<today).slice(-1)[0]||history.filter(x=>x.date!==today).slice(-1)[0];
+ if(!prior)return null;
+ const delta=current-num(prior[key]),pct=prior[key]?delta/num(prior[key])*100:0;
  return {delta,pct};
 }
 function renderDayChange(id,purity){
@@ -92,7 +107,8 @@ async function refreshRates(){
  try{
   const [goldPage,silverPage]=await Promise.all([fetchReaderPage('gold-rates/bangalore.html'),fetchReaderPage('silver-rates/bangalore.html')]);
   const parsed=parseRates(goldPage),silver=parseSilverRate(silverPage);rates={...parsed,silver};
-  const history=parseGoldHistory(goldPage);
+  const history=parseGoldHistory(goldPage),silverHistory=parseSilverHistory(silverPage);
+  mergePublishedMetalHistory(history,silverHistory);
   const datePattern=/(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+20\d{2}|\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+20\d{2}/i;
   const dateMatch=silverPage.match(datePattern)||goldPage.match(datePattern);
   stamp=dateMatch?dateMatch[0]:new Date().toISOString();
