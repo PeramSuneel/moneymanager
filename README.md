@@ -1,40 +1,35 @@
-# Money Manager
+# Money Manager — India Edition
 
-A free-first personal finance and Indian stock portfolio tracker, designed for INR and the India locale.
+A responsive personal finance and Indian investment tracker. All currency values use Indian Rupees (INR / ₹).
 
-## Current starter features
-- Overview dashboard with net worth, monthly income/expenses and portfolio value
-- Income, expense and transfer transaction register
-- Loan and EMI register with outstanding principal, interest rate, EMI and due day
-- NSE/BSE stock holdings with quantity, average buy price and manually refreshed latest price
-- Portfolio profit/loss calculations
-- Basic rule-based stock review flags and investment thesis notes
-- Daily local financial brief based on entered data
-- Monthly cash-flow and category reports
-- CSV transaction export, portfolio CSV import, JSON backup and restore
-- Responsive layout for desktop and mobile; premium dark theme and motion effects
+## Features
+- Working Light, Dark and System appearance modes; preference is saved.
+- Dashboard with estimated net position, income, expenses, EMI and portfolio value.
+- Add, edit, delete and search income, expense and transfer transactions.
+- Loan register with outstanding principal, interest rate, EMI, due date and remaining tenure.
+- NSE/BSE stock holdings with editable prices, quantity, average cost and unrealized P&L.
+- Explainable portfolio review prompts based on entered price movement and data freshness, plus investment thesis notes.
+- Monthly cash-flow chart, spending category report and savings snapshot.
+- JSON backup and restore; transaction CSV export; stock CSV import.
+- Responsive desktop and mobile navigation; reduced-motion accessibility support.
 
-## Deploy with GitHub Pages
-1. Open repository **Settings → Pages**.
-2. Under **Build and deployment**, select **Deploy from a branch**.
-3. Select branch **main**, folder **/ (root)**, then Save.
-4. Wait for the Pages deployment and open the URL shown there.
+## Publish with GitHub Pages
+1. Open **Settings → Pages** in this repository.
+2. Choose **Deploy from a branch**.
+3. Select branch **main** and folder **/(root)**, then Save.
+4. Wait for the deployment. The expected URL is https://peramsuneel.github.io/moneymanager/
 
-## Important data and market limitations
-- All monetary values are INR (₹).
-- Records are stored in the browser's localStorage on the device/browser being used. They do not automatically sync between devices. Download backups regularly.
-- Stock prices in this version are entered manually or imported from CSV. This version does not provide live NSE/BSE quotes, automatic broker sync, or unattended background market updates.
-- The daily brief is generated when the app opens or becomes active, using locally recorded data. Scheduled push notifications and automatic market-data fetching require additional infrastructure and a reliable data provider.
-- The stock advisor provides basic screening prompts only. It is not a SEBI-registered investment adviser and does not provide guaranteed buy/sell recommendations. Verify current financials, filings, valuations, risk, taxes and suitability before investing.
+## Important limitations
+- Records are saved in this browser on this device. They do not automatically synchronize between devices. Download backups regularly.
+- Bank account and broker connections are not enabled. Never enter bank passwords or broker credentials.
+- Stock prices are manually entered or imported from CSV. No live NSE/BSE quote feed or unattended market refresh is enabled in this release.
+- Portfolio review is educational decision support, not a buy/sell instruction or SEBI-registered investment advice. Verify current company filings, fundamentals, valuation, risk and tax implications before investing.
+- Loan values and EMI dates are based on your entries; confirm exact schedules with your lender.
 
-## CSV import format for holdings
-Required headers: `symbol,company,quantity,avgPrice,price`
-Optional header: `exchange`
-Example row: `TCS,Tata Consultancy Services,2,3500,3620,NSE`
+## Stock CSV format
+Required headers: `symbol,company,qty,avg,price`
+Optional headers: `exchange`
+Example: `TCS,Tata Consultancy Services,2,3500,3620,NSE`
 
-## Next development milestones
-1. IndexedDB migration, edit flows, stronger validation and recurring transaction support.
-2. Loan amortization schedules and payment reminders.
-3. Reliable India-market data integration with source timestamps and error states.
-4. Fundamental/technical research modules and explainable portfolio review.
-5. Scheduled daily digest and cross-device backup/sync.
+## Backup
+Use **Settings & backup → Download backup** to save a JSON copy. Restore it on the same browser or another device using **Restore backup**.
