@@ -124,6 +124,9 @@ function renderDayChange(id,purity){
  const key=purity==='24'?'g24':purity==='22'?'g22':purity==='18'?'g18':'silver';
  const change=dayChangeFor(key);
  el.classList.remove('day-change-up','day-change-down','day-change-flat','day-change-unavailable');
+ /* Keep one-day movement neutral grey in every metal card. */
+ el.style.setProperty('color','var(--muted)','important');
+ el.style.setProperty('font-weight','650','important');
  if(!change){el.textContent='1-day change: not published';el.classList.add('day-change-unavailable');return}
  const sign=change.delta>0?'+':change.delta<0?'−':'';
  el.textContent='1-day change: '+sign+fmt(Math.abs(change.delta));
