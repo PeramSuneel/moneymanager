@@ -83,7 +83,7 @@ function renderAdvancedSpend(range,filtered){
  const payment={};filtered.forEach(t=>{const k=t.account||'Not specified';payment[k]=(payment[k]||0)+num(t.amount)});
  $('spendPaymentMethods').innerHTML=Object.entries(payment).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<div class="spend-breakdown-row"><span>'+esc(k)+'</span><b>'+money(v)+'</b><small>'+(expense?(v/expense*100).toFixed(1):0)+'%</small></div>').join('')||'<div class="empty-state show">Add a Paid via / account value to analyse payment methods.</div>';
  renderSpendBudgets(range);
- renderSpendWatch(range,filtered);renderSpendAnnual(range);renderSpendEmi();
+ renderSpendAnnual(range);renderSpendEmi();
 }
 function renderSpendBudgets(range){
  db.spendBudgets=db.spendBudgets||{};const m=range.mode==='year'?range.from.slice(0,4)+'-01':range.from.slice(0,7),categories=[...new Set((db.transactions||[]).filter(t=>t.type==='Expense').map(t=>t.category||'Other'))].sort();
