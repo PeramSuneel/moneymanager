@@ -549,3 +549,19 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 @media(max-width:480px){.spend-budget-entry{grid-template-columns:1fr 1fr}.spend-budget-entry .button{grid-column:1/-1}.spend-classification-summary{grid-template-columns:1fr 1fr 1fr}.spend-breakdown-row{gap:6px;font-size:11px}#spendClassRows select{min-width:75px;padding:5px;font-size:10px}}
 
 .spend-classification-summary{grid-template-columns:repeat(5,minmax(0,1fr))}@media(max-width:480px){.spend-classification-summary{grid-template-columns:repeat(3,minmax(0,1fr))}}
+\n
+/* Clean, smooth spend-analysis donut */
+.spending-chart-wrap{width:min(100%,320px);filter:drop-shadow(0 5px 12px rgba(25,35,50,.045))}
+#spendingDonut{cursor:pointer;outline:none}
+#spendingDonut:focus-visible{outline:2px solid var(--gold);outline-offset:5px;border-radius:50%}
+.spending-chart-center{inset:32%!important;gap:3px}
+.spending-chart-center small{font-size:9px;letter-spacing:1.15px}
+.spending-chart-center strong{font-size:clamp(17px,2.2vw,24px);font-weight:750;letter-spacing:-.035em}
+.spending-legend{gap:7px}
+.spending-legend-item{grid-template-columns:10px minmax(0,1fr) auto;column-gap:8px;padding:9px 10px;border-radius:10px;transition:background .18s ease,border-color .18s ease,box-shadow .18s ease}
+.spending-legend-item:hover,.spending-legend-item.selected{transform:none;box-shadow:0 2px 8px rgba(25,35,50,.055)}
+.spending-legend-item i{width:9px;height:9px;border-radius:50%}
+.spending-legend-item span{font-size:11px;font-weight:600}
+.spending-legend-item b{font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+.spending-legend-item small{grid-column:2/4;font-size:10px;margin-top:1px}
+@media(max-width:850px){.spending-chart-wrap{width:min(100%,300px)}}
