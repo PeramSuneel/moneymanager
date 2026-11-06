@@ -565,3 +565,20 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 .spending-legend-item b{font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
 .spending-legend-item small{grid-column:2/4;font-size:10px;margin-top:1px}
 @media(max-width:850px){.spending-chart-wrap{width:min(100%,300px)}}
+
+/* Reports simplification: compact, static donut and tidy period overview */
+.spending-chart-wrap{filter:none!important}
+.spending-legend-item,.spending-legend-item:hover,.spending-legend-item.selected{transition:none!important;transform:none!important;box-shadow:none!important}
+.spending-legend-item:hover,.spending-legend-item.selected{border-color:var(--line)!important;background:var(--surface-2)!important}
+.spending-chart-center strong{white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;font-size:clamp(13px,1.8vw,21px)!important;overflow-wrap:normal!important}
+.spend-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.spend-kpi{min-width:0!important;overflow:hidden!important}
+.spend-kpi strong{white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;overflow-wrap:normal!important;font-size:clamp(11px,1.25vw,17px)!important;font-variant-numeric:tabular-nums}
+.spend-overview-footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.spend-overview-footer>span{font-size:11px;color:var(--muted);font-weight:650;white-space:nowrap}
+.spend-overview-footer .spend-comparison{flex:1 1 220px;margin:0;min-width:0}
+.savings-ring.compact{width:48px;height:48px;flex:0 0 48px;margin:0;border-width:4px}
+.savings-ring.compact strong{font-size:12px}
+.spend-insights-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:850px){.spend-insights-grid{grid-template-columns:1fr}.spend-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:480px){.spend-kpi-grid{gap:6px!important}.spend-kpi{padding:9px 6px!important}.spend-kpi small{font-size:9px!important}.spend-kpi strong{font-size:clamp(10px,3vw,13px)!important}.spend-overview-footer{gap:8px}.spend-overview-footer .spend-comparison{flex-basis:100%}}
