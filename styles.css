@@ -665,3 +665,39 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 html[data-theme=dark] .category-symbol{background:color-mix(in srgb,var(--category-color) 19%,var(--surface-2))}
 
 @media(max-width:720px){.mobile-brand{display:flex!important}}
+
+
+/* Money Manager brand refresh: Smart Wallet navy + champagne gold.
+   Semantic finance/category colours are intentionally left unchanged. */
+:root{
+ --brand-navy:#263342;
+ --brand-navy-deep:#1b2634;
+ --brand-gold:#d8ac63;
+}
+html[data-theme=dark]{
+ --brand-navy:#202d3d;
+ --brand-navy-deep:#141e2b;
+ --brand-gold:#e5bd7b;
+}
+.button.primary{
+ background:linear-gradient(135deg,var(--brand-navy),var(--brand-navy-deep));
+ color:#f3d9a7;
+ border:1px solid color-mix(in srgb,var(--brand-gold) 58%,transparent);
+ box-shadow:0 5px 15px rgba(31,45,62,.16),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.button.primary:hover{filter:brightness(1.12)}
+.nav-link.active{
+ background:var(--gold-soft);
+ color:var(--brand-navy);
+ box-shadow:inset 3px 0 0 var(--brand-gold);
+}
+html[data-theme=dark] .nav-link.active{color:#f0cf92}
+.hero-strip{
+ background:linear-gradient(112deg,#1d2938 0%,#263b50 58%,#8d6a3c 125%);
+}
+.hero-strip:after{border-color:#e7c78e28;box-shadow:0 0 0 30px #e7c78e0b,0 0 0 60px #e7c78e07}
+.site-navigation{border-bottom-color:color-mix(in srgb,var(--brand-gold) 18%,var(--line))}
+.site-navigation .brand b{letter-spacing:-.35px}
+.money-manager-mark{filter:drop-shadow(0 3px 5px rgba(25,38,53,.16))}
+.mobile-brand{color:var(--brand-navy)!important}
+html[data-theme=dark] .mobile-brand{color:#e5bd7b!important}
