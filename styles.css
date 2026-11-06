@@ -589,3 +589,17 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 .savings-ring.compact strong{font-size:9px!important;line-height:1!important;white-space:nowrap!important;letter-spacing:-.2px}
 .spend-overview-footer{gap:8px!important}
 .spend-overview-footer>span{font-size:10px!important;max-width:82px;line-height:1.2;white-space:normal!important}
+
+/* Final spend-analysis refinements */
+.spending-chart-wrap{width:min(100%,310px)!important}
+.spending-chart-center{inset:30%!important}
+.spending-legend{grid-template-columns:1fr!important;gap:5px!important}
+.spending-legend-item{display:grid!important;grid-template-columns:9px minmax(50px,1fr) auto auto!important;align-items:center!important;gap:8px!important;padding:8px 10px!important;min-height:34px!important}
+.spending-legend-item span{white-space:nowrap!important;min-width:0!important}
+.spending-legend-item b{white-space:nowrap!important;font-size:11px!important;font-variant-numeric:tabular-nums}
+.spending-legend-item small{grid-column:auto!important;margin:0!important;white-space:nowrap!important;font-size:10px!important;color:var(--muted)!important;min-width:28px;text-align:right}
+.savings-ring.compact{width:46px!important;height:46px!important;flex:0 0 46px!important;border-width:3px!important;margin:0!important}
+.savings-ring.compact:before{inset:7px!important}
+.savings-ring.compact strong{font-size:10px!important;line-height:1!important;white-space:nowrap!important;letter-spacing:0!important;font-variant-numeric:tabular-nums}
+.spend-overview-footer>span{max-width:110px!important;font-size:11px!important;white-space:normal!important;line-height:1.2!important}
+@media(max-width:480px){.spending-legend-item{grid-template-columns:8px minmax(42px,1fr) auto auto!important;gap:6px!important;padding:8px!important}.spending-legend-item b{font-size:10px!important}.spending-legend-item small{font-size:9px!important}}
