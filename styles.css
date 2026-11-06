@@ -501,3 +501,49 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
   flex:0 0 auto!important;
   white-space:nowrap!important;
 }
+
+
+/* Expanded spend analysis */
+.spend-insights-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}
+.spend-insights-grid>.panel{min-width:0;padding:clamp(14px,1.8vw,21px)}
+.spend-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:14px}
+.spend-kpi{padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--surface-2);min-width:0}
+.spend-kpi small,.spend-annual-grid small{display:block;color:var(--muted);font-size:10px;margin-bottom:5px}
+.spend-kpi strong{display:block;font-size:clamp(13px,1.5vw,18px);overflow-wrap:anywhere}
+.spend-comparison{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--surface-2);font-size:12px;color:var(--muted)}
+.spend-comparison b{color:var(--text)}
+.spend-comparison.is-good b{color:var(--green)}
+.spend-comparison.is-bad b{color:var(--red)}
+.spend-trend-wrap{height:190px;min-width:0}
+#spendTrendChart{width:100%;height:190px;display:block}
+.spend-breakdown-list{display:grid;gap:9px}
+.spend-breakdown-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}
+.spend-breakdown-row>span{min-width:0;overflow-wrap:anywhere}
+.spend-breakdown-row small{display:block;color:var(--muted);font-size:10px}
+.spend-breakdown-row>small{white-space:nowrap}
+.spend-classification-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:12px}
+.spend-classification-summary>div,.spend-annual-grid>div{padding:10px;border-radius:10px;background:var(--surface-2);min-width:0}
+.spend-classification-summary b,.spend-classification-summary small{display:block}
+.spend-classification-summary b{font-size:13px;overflow-wrap:anywhere}
+.spend-classification-summary small{font-size:10px;color:var(--muted);margin-top:3px}
+#spendClassRows select{min-width:88px;max-width:120px;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);color:var(--text);font:inherit;font-size:11px}
+.spend-budget-entry{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:7px;margin-bottom:14px}
+.spend-budget-entry input{width:100%;min-width:0;padding:9px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--text);font:inherit;font-size:12px}
+.spend-budget-entry .button{padding:8px 11px;font-size:11px}
+.spend-budget-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.spend-budget-item>div:first-child b,.spend-budget-item>div:first-child small{display:block}
+.spend-budget-item>div:first-child small{color:var(--muted);font-size:10px;margin-top:3px}
+.spend-budget-item>strong{font-size:12px}
+.spend-budget-track{grid-column:1/2;height:6px;border-radius:9px;background:var(--line);overflow:hidden}
+.spend-budget-track i{display:block;height:100%;border-radius:9px;background:var(--green)}
+.spend-budget-track i.over{background:var(--red)}
+.spend-budget-item>button{grid-column:2;grid-row:2;font-size:10px}
+.spend-watch-alert{padding:10px;border:1px solid color-mix(in srgb,var(--red) 35%,var(--line));border-radius:10px;background:var(--surface-2)}
+.spend-watch-alert b,.spend-watch-alert small{display:block}
+.spend-watch-alert b{font-size:11px;margin-bottom:7px}
+.spend-watch-alert small{font-size:10px;color:var(--muted);padding:4px 0}
+.spend-note{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin-top:10px}
+.spend-annual-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.spend-annual-grid b{font-size:13px;overflow-wrap:anywhere}
+@media(max-width:850px){.spend-insights-grid{grid-template-columns:1fr}.spend-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.spend-budget-entry{grid-template-columns:1fr 1fr}.spend-budget-entry .button{grid-column:1/-1}.spend-classification-summary{grid-template-columns:1fr 1fr 1fr}.spend-breakdown-row{gap:6px;font-size:11px}#spendClassRows select{min-width:75px;padding:5px;font-size:10px}}
