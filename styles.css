@@ -603,3 +603,47 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 .savings-ring.compact strong{font-size:10px!important;line-height:1!important;white-space:nowrap!important;letter-spacing:0!important;font-variant-numeric:tabular-nums}
 .spend-overview-footer>span{max-width:110px!important;font-size:11px!important;white-space:normal!important;line-height:1.2!important}
 @media(max-width:480px){.spending-legend-item{grid-template-columns:8px minmax(42px,1fr) auto auto!important;gap:6px!important;padding:8px!important}.spending-legend-item b{font-size:10px!important}.spending-legend-item small{font-size:9px!important}}
+
+
+/* Spend analyser legend: keep category, amount and percentage on one row */
+.spending-legend-item{
+  display:flex!important;
+  flex-flow:row nowrap!important;
+  align-items:center!important;
+  width:100%!important;
+  min-width:0!important;
+  gap:8px!important;
+  overflow:hidden!important;
+}
+.spending-legend-item i{
+  display:block!important;
+  flex:0 0 9px!important;
+}
+.spending-legend-item span{
+  display:block!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.spending-legend-item b{
+  display:block!important;
+  flex:0 0 auto!important;
+  white-space:nowrap!important;
+  margin-left:auto!important;
+}
+.spending-legend-item small{
+  display:block!important;
+  flex:0 0 30px!important;
+  width:30px!important;
+  min-width:30px!important;
+  white-space:nowrap!important;
+  text-align:right!important;
+  margin:0!important;
+}
+@media(max-width:480px){
+  .spending-legend-item{gap:6px!important;padding:8px!important}
+  .spending-legend-item b{font-size:10px!important}
+  .spending-legend-item small{flex-basis:26px!important;width:26px!important;min-width:26px!important;font-size:9px!important}
+}
