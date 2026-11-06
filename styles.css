@@ -663,3 +663,5 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 .spending-legend-item .category-symbol svg{width:14px;height:14px}
 .spending-legend-item span{font-weight:650!important}
 html[data-theme=dark] .category-symbol{background:color-mix(in srgb,var(--category-color) 19%,var(--surface-2))}
+
+@media(max-width:720px){.mobile-brand{display:flex!important}}
