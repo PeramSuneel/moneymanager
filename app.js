@@ -53,7 +53,7 @@ function spendingRange(){let mode=$('spendPeriod').value,now=localDate(),v=mode=
 function drawSpendingDonut(){
  const c=$('spendingDonut');if(!c)return;const w=Math.max(220,c.clientWidth||300),h=Math.max(220,c.clientHeight||300),dpr=window.devicePixelRatio||1;
  c.width=Math.round(w*dpr);c.height=Math.round(h*dpr);const ctx=c.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
- const total=spendSegments.reduce((s,x)=>s+x.value,0),cx=w/2,cy=h/2,r=Math.min(w,h)*.405,thick=Math.min(29,Math.max(21,r*.23)),dark=document.documentElement.dataset.theme==='dark';
+ const total=spendSegments.reduce((s,x)=>s+x.value,0),cx=w/2,cy=h/2,r=Math.min(w,h)*.405,thick=Math.min(18,Math.max(13,r*.15)),dark=document.documentElement.dataset.theme==='dark';
  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle=dark?'#303a49':'#edf0f3';ctx.lineWidth=thick;ctx.stroke();
  let angle=-Math.PI/2;
  spendSegments.forEach((x,i)=>{const sweep=total?x.value/total*Math.PI*2:0;x.start=angle;x.end=angle+sweep;if(sweep<=0){angle+=sweep;return}
