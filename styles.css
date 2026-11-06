@@ -547,3 +547,5 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 .spend-annual-grid b{font-size:13px;overflow-wrap:anywhere}
 @media(max-width:850px){.spend-insights-grid{grid-template-columns:1fr}.spend-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.spend-budget-entry{grid-template-columns:1fr 1fr}.spend-budget-entry .button{grid-column:1/-1}.spend-classification-summary{grid-template-columns:1fr 1fr 1fr}.spend-breakdown-row{gap:6px;font-size:11px}#spendClassRows select{min-width:75px;padding:5px;font-size:10px}}
+
+.spend-classification-summary{grid-template-columns:repeat(5,minmax(0,1fr))}@media(max-width:480px){.spend-classification-summary{grid-template-columns:repeat(3,minmax(0,1fr))}}
