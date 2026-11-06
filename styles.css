@@ -582,3 +582,10 @@ html[data-theme="dark"] .silver-rate{background:linear-gradient(145deg,#293442,v
 .spend-insights-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:850px){.spend-insights-grid{grid-template-columns:1fr}.spend-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 @media(max-width:480px){.spend-kpi-grid{gap:6px!important}.spend-kpi{padding:9px 6px!important}.spend-kpi small{font-size:9px!important}.spend-kpi strong{font-size:clamp(10px,3vw,13px)!important}.spend-overview-footer{gap:8px}.spend-overview-footer .spend-comparison{flex-basis:100%}}
+
+/* Fine-tune compact savings indicator and lighter donut */
+.savings-ring.compact{width:38px!important;height:38px!important;flex:0 0 38px!important;border-width:3px!important;margin:0!important}
+.savings-ring.compact:before{inset:6px!important}
+.savings-ring.compact strong{font-size:9px!important;line-height:1!important;white-space:nowrap!important;letter-spacing:-.2px}
+.spend-overview-footer{gap:8px!important}
+.spend-overview-footer>span{font-size:10px!important;max-width:82px;line-height:1.2;white-space:normal!important}
