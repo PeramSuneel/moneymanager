@@ -1,35 +1,58 @@
 'use strict';
 
-/**
- * Pure parser for Indian bank / UPI transaction SMS.
- * @param {string} sender SMS sender ID (for example HDFCBK or SBIINB).
- * @param {string} body SMS text.
- * @param {number|string|Date} timestamp SMS timestamp.
- * @returns {object|null} Normalized transaction candidate, or null when not financial.
- */
 function parseSms(sender, body, timestamp) {
   try {
     const from = String(sender || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
     const text = String(body || '').replace(/\s+/g, ' ').trim();
-    if (!text || !from || !/(HDFC|HDFCBK|SBI|SBIN|ICICI|ICICIB|AXIS|AXISBK|KOTAK|PNB|PNBSMS|CANBNK|CANARA|YESBNK|IDFC|IDFCFB|PAYTM|AIRTEL|JIOFIN|FEDBNK|BOB|UNION|INDUS|RBL|AUFB)/i.test(from)) return null;
+    if (!text || !from || !/(HDFC|SBI|ICICI|AXIS|KOTAK|PNB|CANBNK|CANARA|YESBNK|IDFC|PAYTM|AIRTEL|JIOFIN|FEDBNK|BOB|UNION|INDUS|RBL|AUFB)/i.test(from)) return null;
 
     const upper = text.toUpperCase();
-    if (/\b(OTP|ONE TIME PASSWORD|VERIFICATION CODE|PROMO|OFFER|CASHBACK OFFER|REWARD POINTS|AVAILABLE BALANCE|AVAIL BAL|BALANCE IS|BALANCE:|MINIMUM BALANCE)\b/i.test(upper)) return null;
-    if (/\b(credited|deposited|received|debited|spent|paid|withdrawn|purchase|refund|reversed|transferred|transfer)\b/i.test(upper) === false) return null;
+    if (/\b(OTP|ONE TIME PASSWORD|VERIFICATION CODE|PROMO|OFFER|CASHBACK OFFER|REWARD POINTS)\b/i.test(upper)) return null;
 
-    const amountMatches = [...text.matchAll(/(?:₹|INR\s*|Rs\.?\s*)([0-9][0-9,]*(?:\.\d{1,2})?)/gi)];
-    if (amountMatches.length !== 1) return null;
-    const amount = Number(amountMatches[0][1].replace(/,/g, ''));
-    if (!Number.isFinite(amount) || amount <= 0) return null;
+    const balanceMarker = /\b(?:AVAIL(?:ABLE)?\s+BAL(?:ANCE)?|BAL(?:ANCE)?\s*(?=[:=]|(?:RS\.?|INR|₹)\s)|LIMIT\s*(?=[:=]|(?:RS\.?|INR|₹)\s))/i;
+    const balanceMatch = balanceMarker.exec(text);
+    const transactionText = balanceMatch ? text.slice(0, balanceMatch.index) : text;
+    const actionPattern = /\b(?:debited|debit|credited|credit|spent|paid|payment|withdrawn|withdrawal|withdraw|purchase|refunded|refund|reversed|reversal|deposited|received|transferred|transfer)\b/ig;
+    const actions = [...transactionText.matchAll(actionPattern)];
+    if (!actions.length) return null;
+
+    const amountPattern = /(?:₹|INR\s*|Rs\.?\s*)([0-9][0-9,]*(?:\.\d{1,2})?)/gi;
+    const amounts = [...transactionText.matchAll(amountPattern)].map(match => ({
+      value: Number(match[1].replace(/,/g, '')),
+      start: match.index,
+      end: match.index + match[0].length
+    })).filter(item => Number.isFinite(item.value) && item.value > 0);
+    if (!amounts.length) return null;
+
+    let selected = null;
+    let selectedDistance = Infinity;
+    for (const candidate of amounts) {
+      for (const action of actions) {
+        const actionStart = action.index;
+        const actionEnd = actionStart + action[0].length;
+        const distance = candidate.end < actionStart ? actionStart - candidate.end :
+          (actionEnd < candidate.start ? candidate.start - actionEnd : 0);
+        if (distance < selectedDistance) {
+          selected = candidate;
+          selectedDistance = distance;
+        }
+      }
+    }
+    if (!selected || selectedDistance > 80) return null;
+    const amount = selected.value;
 
     const isCardBill = /\b(credit\s*card|card\s*payment|card\s*bill)\b/i.test(text) &&
       /\b(payment|paid|bill|due)\b/i.test(text);
-    const isRefund = /\b(refund|reversed|reversal)\b/i.test(text);
-    const isCredit = /\b(credited|deposited|received|refund|reversed|reversal)\b/i.test(text);
-    const isDebit = /\b(debited|spent|paid|withdrawn|purchase|transferred)\b/i.test(text);
+    const isRefund = /\b(refund|refunded|reversed|reversal)\b/i.test(transactionText);
+    const isCredit = /\b(credited|credit|deposited|received|refund|refunded|reversed|reversal)\b/i.test(transactionText);
+    const isDebit = /\b(debited|debit|spent|paid|withdrawn|withdrawal|withdraw|purchase|transferred)\b/i.test(transactionText);
     if (!isCardBill && isCredit === isDebit) return null;
 
-    const type = isCardBill ? 'Transfer' : (isCredit ? 'Income' : 'Expense');
+    let type;
+    if (isCardBill) type = 'Transfer';
+    else if (isCredit) type = 'Income';
+    else type = 'Expense';
+
     const date = parseDate(text, timestamp);
     const last4Match = text.match(/(?:A\/C|AC|ACCOUNT|CARD|XX|X{2,})\s*[:#-]?\s*(?:XX|X{2,})?([0-9]{4})\b/i) ||
       text.match(/\b(?:ending|ending with)\s*([0-9]{4})\b/i);
@@ -41,7 +64,16 @@ function parseSms(sender, body, timestamp) {
     const atm = /\bATM\b|cash\s+withdraw/i.test(text);
     const card = /\b(card|POS|e-?com|purchase)\b/i.test(text);
     const emi = /\bEMI\b/i.test(text);
-    const channel = isCardBill ? 'Credit card bill' : (upi ? 'UPI' : (atm ? 'ATM' : (emi ? 'EMI' : (card ? 'Card' : (/\b(NEFT|IMPS|RTGS)\b/i.test(text) ? text.match(/\b(NEFT|IMPS|RTGS)\b/i)[1].toUpperCase() : 'Bank'))));
+    let channel;
+    if (isCardBill) channel = 'Credit card bill';
+    else if (upi) channel = 'UPI';
+    else if (atm) channel = 'ATM';
+    else if (emi) channel = 'EMI';
+    else if (card) channel = 'Card';
+    else {
+      const bankTransfer = text.match(/\b(NEFT|IMPS|RTGS)\b/i);
+      channel = bankTransfer ? bankTransfer[1].toUpperCase() : 'Bank';
+    }
 
     let merchant = '';
     const merchantPatterns = [
@@ -63,36 +95,31 @@ function parseSms(sender, body, timestamp) {
     merchant = merchant.slice(0, 48);
 
     let category = 'Other';
-    if (isCardBill) category = 'Other transfer';
-    else if (type === 'Transfer') category = 'Other transfer';
+    if (isCardBill || type === 'Transfer') category = 'Other transfer';
     else if (type === 'Income' && /\b(salary|payroll)\b/i.test(text)) category = 'Salary';
     else if (type === 'Income' && isRefund) category = 'Refund';
     else if (type === 'Income') category = 'Other income';
     else if (emi) category = 'EMI';
-    else if (/\b(grocery|groceries|supermarket|bigbasket|blinkit|zepto)\b/i.test(text + ' ' + merchant)) category = 'Groceries';
+    else if (/\b(grocery|groceries|supermarket|bigbasket|blinkit|zepto|dmart|d\s*mart|reliance\s*fresh|more)\b/i.test(text + ' ' + merchant)) category = 'Groceries';
     else if (/\b(food|restaurant|swiggy|zomato|canteen)\b/i.test(text + ' ' + merchant)) category = 'Food';
     else if (/\b(fuel|petrol|diesel|uber|ola|rapido|metro|transport)\b/i.test(text + ' ' + merchant)) category = 'Transport';
     else if (/\b(electricity|water bill|mobile recharge|broadband|utility)\b/i.test(text)) category = 'Utilities';
     else if (/\b(amazon|flipkart|myntra|shopping)\b/i.test(text + ' ' + merchant)) category = 'Shopping';
-    else if (atm) category = 'Other';
-    
+
     const description = [channel, merchant].filter(Boolean).join(' - ') || channel;
-    const account = isCardBill ? 'Credit card' : (upi ? 'UPI' : (atm ? 'Cash' : (card ? 'Debit card' : 'Bank transfer')));
-    const fingerprint = reference
-      ? 'ref:' + reference
-      : [from, amount.toFixed(2), date, last4, type, channel, merchant.toLowerCase()].join('|');
+    let account;
+    if (isCardBill) account = 'Credit card';
+    else if (upi) account = 'UPI';
+    else if (atm) account = 'Cash';
+    else if (card) account = 'Debit card';
+    else account = 'Bank transfer';
+    const fingerprint = reference ? 'ref:' + reference :
+      [from, amount.toFixed(2), date, last4, type, channel, merchant.toLowerCase()].join('|');
 
     return {
       amount: Math.round((amount + Number.EPSILON) * 100) / 100,
-      type,
-      date,
-      description,
-      category,
-      account,
-      sender: from,
-      accountLast4: last4,
-      reference,
-      fingerprint
+      type, date, description, category, account, sender: from,
+      accountLast4: last4, reference, fingerprint
     };
   } catch (_) {
     return null;
