@@ -1,8 +1,12 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { execFileSync } = require('node:child_process');
 const parseSms = require('../sms-parser.js');
 const at = new Date('2026-11-11T10:30:00+05:30');
+test('sms-parser.js passes node --check syntax validation', () => {
+  assert.equal(execFileSync(process.execPath, ['--check', require.resolve('../sms-parser.js')], { encoding: 'utf8' }), '');
+});
 const cases = [
   ['HDFCBK','Rs. 450.00 debited from A/c XX1234 via UPI to SWIGGY. UPI Ref 612345678901.','Expense','UPI',450,'Food'],
   ['SBIINB','Your A/c XX4321 debited by INR 1,250.50 on 11-11-2026 for UPI payment to ZOMATO. UPI Ref 712345678901.','Expense','UPI',1250.5,'Food'],
