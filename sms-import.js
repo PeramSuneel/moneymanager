@@ -3,7 +3,14 @@
 (function (root, factory) {
   const api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
-  if (root) root.MoneyManagerSmsImport = api;
+  if (root) {
+    root.MoneyManagerSmsImport = api;
+    if (root.document) {
+      const start = () => api.initSmsImportUI();
+      if (root.document.readyState === 'loading') root.document.addEventListener('DOMContentLoaded', start);
+      else start();
+    }
+  }
 })(typeof window !== 'undefined' ? window : globalThis, function () {
   const PROCESSED_KEY = 'moneyManagerSmsProcessed.v1';
   const REVIEW_KEY = 'moneyManagerSmsNeedsReview.v1';
@@ -107,7 +114,7 @@
     updateReviewCount();
   }
 
-  return { createSmsImport, parseSmsBlocks, PROCESSED_KEY, REVIEW_KEY };
+  return { createSmsImport, parseSmsBlocks, initSmsImportUI, PROCESSED_KEY, REVIEW_KEY };
 });
 
 if (typeof window !== 'undefined') {
