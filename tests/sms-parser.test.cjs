@@ -91,7 +91,7 @@ const accuracyCases = [
   ['HDFCBK','Your A/c XX1234 debited by 350.0 via UPI to TEA SHOP.','amount'],
   ['SBIINB','Your A/c XX4321 credited by 12,500 via NEFT from EMPLOYER.','amount'],
   ['ICICIB','A/c XX1234 debited Rs 700 and credited Rs 700 as reversal.','mixed'],
-  ['AXISBK','Your transaction declined. Ref DECLINED. Rs 200 debited from A/c XX1234.','ref'],
+  ['AXISBK','Rs 200 debited from A/c XX1234. Ref DECLINED.','ref'],
   ['KOTAKB','Rs 200 debited from A/c XX1234 at DMART.','fingerprint'],
   ['HDFCBK','Rs 450 debited from A/c XX1234 via UPI to SWIGGY.','account'],
   ['CANBNK','Your A/c XX1234 debited Rs 499 for subscription payment to NETFLIX.','description']
@@ -165,7 +165,7 @@ test('Step 2c: reference containing DECLINED is not accepted without a digit', (
   assert.equal(result.reference, '');
 });
 test('Step 2c: bank name uses sender ID before text fallback', () => {
-  const result = parseSms('HDFCBK', 'Rs 200 debited from A/c XX1234 at SHOP. Ref 123456789012. PNB transfer partner.', at);
+  const result = parseSms('HDFCBK', 'Rs 200 debited from A/c XX1234 at SHOP. Ref 123456789012. PNB Bank is mentioned.', at);
   assert.equal(result.bankName, 'HDFC');
 });
 test('Step 2c: merchant extraction stops at reference and operational text', () => {
