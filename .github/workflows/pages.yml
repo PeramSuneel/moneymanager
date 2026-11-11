@@ -29,11 +29,13 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Check application JavaScript
-        run: node --check app.js && node --check market.js
+        run: node --check app.js && node --check market.js && node --check sms-parser.js && node --check sms-import.js
       - name: Run financial calculation regression tests
         run: node --test tests/calculations.test.cjs
       - name: Run SMS parser tests
         run: node --test tests/sms-parser.test.cjs
+      - name: Run SMS import helper tests
+        run: node --test tests/sms-import.test.cjs
       - name: Run mobile preview smoke tests
         run: node tests/preview-smoke.mjs
 
