@@ -78,3 +78,53 @@ test('returns null for malformed input without throwing', () => {
   assert.equal(parseSms(null, null, null), null);
   assert.equal(parseSms('HDFCBK', 'Rs. NaN debited from A/c XX1234', at), null);
 });
+
+const accuracyCases = [
+  ['HDFCBK','Your A/c XX1234 transaction failed. Rs 350 debited.','reject'],
+  ['SBIINB','Your account XX1234 debit unsuccessful for Rs 350.','reject'],
+  ['ICICIB','Your payment was declined. Rs 350 debited from A/c XX1234.','reject'],
+  ['AXISBK','Transaction reversed-attempt for Rs 350 from A/c XX1234.','reject'],
+  ['KOTAKB','Rs 350 will be debited from your A/c XX1234.','reject'],
+  ['PNBSMS','Rs 350 debit scheduled from A/c XX1234.','reject'],
+  ['CANBNK','Mandate for Rs 350 from A/c XX1234 is active.','reject'],
+  ['YESBNK','Your EMI payment request/reminder is due for Rs 350 from A/c XX1234.','reject'],
+  ['HDFCBK','Your A/c XX1234 debited by 350.0 via UPI to TEA SHOP.','amount'],
+  ['SBIINB','Your A/c XX4321 credited by 12,500 via NEFT from EMPLOYER.','amount'],
+  ['ICICIB','A/c XX1234 debited Rs 700 and credited Rs 700 as reversal.','mixed'],
+  ['AXISBK','Your transaction declined. Ref DECLINED. Rs 200 debited from A/c XX1234.','ref'],
+  ['KOTAKB','Rs 200 debited from A/c XX1234 at DMART.','fingerprint'],
+  ['PNBSMS','Rs 450 debited from A/c XX1234 via UPI to SWIGGY.','account'],
+  ['CANBNK','Your mandate to NETFLIX for Rs 499 debited from A/c XX1234.','description']
+];
+for (const [sender, body, kind] of accuracyCases) {
+  test('parser accuracy: ' + kind + ' — ' + body.slice(0, 38), () => {
+    const result = parseSms(sender, body, at);
+    if (kind === 'reject') {
+      assert.equal(result, null);
+    } else if (kind === 'amount') {
+      assert.ok(result);
+      assert.ok(result.amount > 0);
+    } else if (kind === 'mixed') {
+      assert.ok(result);
+      assert.equal(result.type, 'Expense');
+    } else if (kind === 'ref') {
+      assert.ok(result);
+      assert.ok(!result.reference || /\\d/.test(result.reference));
+    } else if (kind === 'fingerprint') {
+      const same = parseSms(sender, body, at);
+      const nextMinute = parseSms(sender, body, new Date('2026-11-11T10:31:00+05:30'));
+      assert.ok(result);
+      assert.equal(result.fingerprint, same.fingerprint);
+      assert.notEqual(result.fingerprint, nextMinute.fingerprint);
+    } else if (kind === 'account') {
+      assert.ok(result);
+      assert.equal(result.bankName, 'HDFC');
+      assert.equal(result.accountLast4, '1234');
+      assert.match(result.description, /^UPI\\s-\\sSWIGGY$/);
+    } else if (kind === 'description') {
+      assert.ok(result);
+      assert.doesNotMatch(result.description, /mandate|your|UPI to/i);
+      assert.match(result.description, /^Bank\\s-\\sNETFLIX$/);
+    }
+  });
+}
