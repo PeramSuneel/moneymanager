@@ -19,8 +19,12 @@ function parseSms(sender, body, timestamp) {
 
     // "payment" is descriptive, not a debit/credit direction.
     const actionRegex = /\b(debited|debit|credited|credit|spent|paid|sent|withdrawn|withdrawal|withdraw|purchase|refunded|refund|reversed|reversal|deposited|received|transferred|transfer)\b/ig;
-    const actions = [...transactionText.matchAll(actionRegex)];
-    if (!actions.length) return null;
+    let actions = [...transactionText.matchAll(actionRegex)];
+    if (!actions.length) {
+      const uncertainAction = /\btransaction\b/i.exec(transactionText);
+      if (uncertainAction) actions = [uncertainAction];
+      else return null;
+    }
 
     const accountMatch = transactionText.match(/\b(?:A\/C|AC|ACCOUNT)\s*(?:NO\.?\s*)?(?:XX|X{1,2}|[*])?\s*\d{3,4}/i);
     let decisionActions = actions;
@@ -61,8 +65,8 @@ function parseSms(sender, body, timestamp) {
       /\b(payment|paid|bill|due)\b/i.test(text);
     const isCredit = /^(credited|credit|deposited|received|refund|refunded|reversed|reversal)$/i.test(actionWord);
     const isDebit = /^(debited|debit|spent|paid|sent|withdrawn|withdrawal|withdraw|purchase|transferred)$/i.test(actionWord);
-    if (!isCardBill && !isCredit && !isDebit) return null;
-    const type = isCardBill ? 'Transfer' : isCredit ? 'Income' : 'Expense';
+    const isUnknownType = !isCardBill && !isCredit && !isDebit;
+    const type = isCardBill ? 'Transfer' : isCredit ? 'Income' : isDebit ? 'Expense' : 'Unknown';
 
     const date = parseDate(text, timestamp);
     const accountId = text.match(/(?:A\/C|AC|ACCOUNT|CARD)\s*(?:NO\.?\s*)?[:#-]?\s*(?:XX|X{1,2}|\*)?([0-9]{3,4})\b/i) ||
@@ -151,8 +155,13 @@ function parseSms(sender, body, timestamp) {
     const hasDebitWord = /\b(debited|debit|spent|paid|sent|withdrawn|withdrawal|withdraw|purchase|transferred)\b/i.test(transactionText);
     const hasCreditWord = /\b(credited|credit|deposited|received|refunded|refund)\b/i.test(transactionText);
     const conflictingActions = hasDebitWord && hasCreditWord;
+    const actionEnd = firstAction.index + firstAction[0].length;
+    const amountDistances = validAmounts.map(candidate => candidate.end < firstAction.index
+      ? firstAction.index - candidate.end
+      : actionEnd < candidate.start ? candidate.start - actionEnd : 0).sort((x,y) => x-y);
+    const ambiguousAmount = amountDistances.length > 1 && amountDistances[1] - amountDistances[0] <= 15;
     const junkMerchant = !merchant || /^(?:UNKNOWN|PAYMENT|TRANSACTION|BANK|ACCOUNT|A\/C|DISPUTE|IF NOT)$/i.test(merchant);
-    const confidence = (!junkMerchant && !conflictingActions && selectedDistance <= 45 && (isCredit || isDebit || isCardBill)) ? 'high' : 'low';
+    const confidence = (!junkMerchant && !conflictingActions && !isUnknownType && !ambiguousAmount && selectedDistance <= 45) ? 'high' : 'low';
 
     return {
       confidence, amount: Math.round((amount + Number.EPSILON) * 100) / 100,
