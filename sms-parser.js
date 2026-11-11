@@ -7,7 +7,8 @@ function parseSms(sender, body, timestamp) {
     if (!text || !from || !/(HDFC|SBI|ICICI|AXIS|KOTAK|PNB|CANBNK|CANARA|YESBNK|IDFC|PAYTM|AIRTEL|JIOFIN|FEDBNK|BOB|UNION|INDUS|RBL|AUFB)/i.test(from)) return null;
 
     if (/\b(OTP|ONE TIME PASSWORD|VERIFICATION CODE)\b/i.test(text)) return null;
-    if (/\b(FAILED|FAILURE|DECLINED|UNSUCCESSFUL|SCHEDULED|MANDATE|REMINDER)\b/i.test(text) ||
+    if (/\b(FAILED|FAILURE|UNSUCCESSFUL|SCHEDULED|MANDATE|REMINDER)\b/i.test(text) ||
+        /\b(?:transaction|payment|transfer|debit|credit)\s+(?:was\s+)?declined\b|\bdeclined\s+(?:transaction|payment|transfer)\b/i.test(text) ||
         /\bWILL\s+BE\s+DEBITED\b/i.test(text) ||
         /\bREVERSED?[- ]ATTEMPT\b/i.test(text) ||
         /\b(?:PAYMENT\s+REQUEST|REQUEST\s+TO\s+(?:PAY|DEBIT)|PAYMENT\s+DUE|DUE\s+DATE)\b/i.test(text)) return null;
