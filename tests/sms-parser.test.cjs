@@ -118,7 +118,7 @@ for (const [sender, body, kind] of accuracyCases) {
       assert.notEqual(result.fingerprint, nextMinute.fingerprint);
     } else if (kind === 'account') {
       assert.ok(result);
-      assert.equal(result.bankName, 'HDFC');
+      assert.equal(result.bankName, 'PNB');
       assert.equal(result.accountLast4, '1234');
       assert.match(result.description, /^UPI\\s-\\sSWIGGY$/);
     } else if (kind === 'description') {
