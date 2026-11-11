@@ -99,7 +99,10 @@ function parseSms(sender, body, timestamp) {
       /\bat\s+([A-Z0-9][A-Z0-9._@& -]{1,38}?)(?=\s+(?:from|via|using|on|ref|utr|upi|txn|avl|available|bal|balance|a\/c|ac|card|dated)\b|[.,;]|$)/i,
       /\bfrom\s+([A-Z0-9][A-Z0-9._@& -]{1,38}?)(?=\s+(?:via|using|on|ref|utr|upi|txn|avl|available|bal|balance|a\/c|ac|card|dated)\b|[.,;]|$)/i
     ];
-    for (const pattern of payeePatterns) {
+    // UPI path alerts encode the merchant after the numeric reference segment.
+    const upiPath = transactionText.match(/\\bUPI\\/P2M\\/\\d+\\/([A-Z0-9][A-Z0-9 &._-]{1,30}?)(?=\\s|$)/i);
+    if (upiPath) merchant = upiPath[1].trim();
+    if (!merchant) for (const pattern of payeePatterns) {
       const match = transactionText.match(pattern);
       if (match) {
         merchant = match[1].trim().replace(/\s+/g, ' ').replace(/[.,;]+$/, '');
@@ -111,6 +114,8 @@ function parseSms(sender, body, timestamp) {
       const vpa = transactionText.match(/\b([A-Z0-9._-]+@[A-Z0-9.-]+)\b/i);
       if (vpa) merchant = vpa[1];
     }
+    merchant = merchant.replace(/\\b(?:REF(?:NO|ERENCE)?|UPI|CALL|IF|TO\\s+DISPUTE)\\b.*$/i, '').replace(/\\b\\d{5,}\\b.*$/,'').trim();
+    if (/^(?:BANK|ACCOUNT|A\\/C|CARD|PAYMENT|TRANSACTION|DISPUTE|IF NOT|UNKNOWN)$/i.test(merchant)) merchant = '';
     merchant = merchant.slice(0, 48);
 
     let category = 'Other';
@@ -133,7 +138,7 @@ function parseSms(sender, body, timestamp) {
     else if (card) account = 'Debit card';
     else account = 'Bank transfer';
 
-    const bankName = getBankName(from);
+    const bankName = getBankName(from) || getBankNameFromText(text) || from;
     const timestampDate = timestamp instanceof Date ? timestamp : new Date(timestamp);
     const timestampMinute = Number.isNaN(timestampDate.getTime()) ? date + 'T00:00' :
       [timestampDate.getFullYear(), String(timestampDate.getMonth()+1).padStart(2,'0'),
@@ -142,7 +147,14 @@ function parseSms(sender, body, timestamp) {
     const fingerprint = reference ? 'ref:' + reference :
       [from, amount.toFixed(2), date, timestampMinute, last4, type, channel, merchant.toLowerCase()].join('|');
 
+    const hasDebitWord = /\\b(debited|debit|spent|paid|sent|withdrawn|withdrawal|withdraw|purchase|transferred)\\b/i.test(transactionText);
+    const hasCreditWord = /\\b(credited|credit|deposited|received|refunded|refund)\\b/i.test(transactionText);
+    const conflictingActions = hasDebitWord && hasCreditWord;
+    const junkMerchant = !merchant || /^(?:UNKNOWN|PAYMENT|TRANSACTION|BANK|ACCOUNT|A\\/C|DISPUTE|IF NOT)$/i.test(merchant);
+    const confidence = (!junkMerchant && !conflictingActions && selectedDistance <= 45 && (isCredit || isDebit || isCardBill)) ? 'high' : 'low';
+
     return {
+      confidence,
       amount: Math.round((amount + Number.EPSILON) * 100) / 100,
       type, date, description, category, account, bankName,
       sender: from, accountLast4: last4, reference, fingerprint
@@ -150,6 +162,25 @@ function parseSms(sender, body, timestamp) {
   } catch (_) {
     return null;
   }
+}
+
+function getBankNameFromText(text) {
+  const match = String(text || '').match(/\\b(HDFC|STATE BANK OF INDIA|SBI|ICICI|AXIS|KOTAK|PUNJAB NATIONAL BANK|PNB|CANARA|IDFC|BANK OF BARODA|BOB|UNION BANK|INDUSIND|RBL)\\s+(?:BANK)?\\b/i);
+  if (!match) return '';
+  const key = match[1].toUpperCase();
+  if (key === 'STATE BANK OF INDIA' || key === 'SBI') return 'SBI';
+  if (key === 'PUNJAB NATIONAL BANK' || key === 'PNB') return 'PNB';
+  if (key === 'HDFC') return 'HDFC';
+  if (key === 'ICICI') return 'ICICI';
+  if (key === 'AXIS') return 'Axis';
+  if (key === 'KOTAK') return 'Kotak';
+  if (key === 'CANARA') return 'Canara';
+  if (key === 'IDFC') return 'IDFC';
+  if (key === 'BANK OF BARODA' || key === 'BOB') return 'Bank of Baroda';
+  if (key === 'UNION BANK') return 'Union Bank';
+  if (key === 'INDUSIND') return 'IndusInd';
+  if (key === 'RBL') return 'RBL';
+  return '';
 }
 
 function getBankName(sender) {
