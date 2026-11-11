@@ -210,3 +210,24 @@ test('Step 2c: clean description for subscription debit is Bank - NETFLIX', () =
   assert.ok(result);
   assert.equal(result.description, 'Bank - NETFLIX');
 });
+
+// Step 2d: UPI collect/payment requests and credit-card reminders are not completed transactions.
+test('Step 2d: rejects UPI request-for-money collect wording', () => {
+  assert.equal(parseSms('HDFCBK', 'Request for Rs 500 received from RAHUL on UPI. Approve in app.', at), null);
+});
+test('Step 2d: rejects has-requested and requested-money wording', () => {
+  assert.equal(parseSms('ICICIB', 'RAHUL has requested Rs 500 from you on UPI.', at), null);
+  assert.equal(parseSms('KOTAKB', 'RAHUL requested money of Rs 500 from you. Pay now.', at), null);
+});
+test('Step 2d: rejects collect requests', () => {
+  assert.equal(parseSms('AXISBK', 'Collect request for Rs 500 from RAHUL on UPI. Approve to pay.', at), null);
+});
+test('Step 2d: rejects pay requests', () => {
+  assert.equal(parseSms('SBIINB', 'Pay request of Rs 500 from RAHUL received on UPI.', at), null);
+});
+test('Step 2d: rejects approval prompts for incoming collect requests', () => {
+  assert.equal(parseSms('IDFCFB', 'Approve Rs 500 request from RAHUL in your UPI app.', at), null);
+});
+test('Step 2d: rejects credit-card due reminders even when they say pay now', () => {
+  assert.equal(parseSms('HDFCBK', 'Rs 500 is due on 15-Nov for your credit card. Pay now.', at), null);
+});
