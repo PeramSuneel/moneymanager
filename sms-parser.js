@@ -9,7 +9,7 @@ function parseSms(sender, body, timestamp) {
     const upper = text.toUpperCase();
     if (/\b(OTP|ONE TIME PASSWORD|VERIFICATION CODE|PROMO|OFFER|CASHBACK OFFER|REWARD POINTS)\b/i.test(upper)) return null;
 
-    const balanceMarker = /\b(?:AVAIL(?:ABLE)?\s+BAL(?:ANCE)?|BAL(?:ANCE)?\s*(?=[:=]|(?:RS\.?|INR|₹)\s)|LIMIT\s*(?=[:=]|(?:RS\.?|INR|₹)\s))/i;
+    const balanceMarker = /\b(?:AVAIL(?:ABLE)?\s+BAL(?:ANCE)?(?:\s+IS)?|BAL(?:ANCE)?\s*(?=[:=]|(?:RS\.?|INR|₹)\s)|LIMIT\s*(?=[:=]|(?:RS\.?|INR|₹)\s))/i;
     const balanceMatch = balanceMarker.exec(text);
     const transactionText = balanceMatch ? text.slice(0, balanceMatch.index) : text;
     const actionPattern = /\b(?:debited|debit|credited|credit|spent|paid|payment|withdrawn|withdrawal|withdraw|purchase|refunded|refund|reversed|reversal|deposited|received|transferred|transfer)\b/ig;
