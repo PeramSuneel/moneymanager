@@ -94,7 +94,7 @@ const accuracyCases = [
   ['AXISBK','Your transaction declined. Ref DECLINED. Rs 200 debited from A/c XX1234.','ref'],
   ['KOTAKB','Rs 200 debited from A/c XX1234 at DMART.','fingerprint'],
   ['PNBSMS','Rs 450 debited from A/c XX1234 via UPI to SWIGGY.','account'],
-  ['CANBNK','Your mandate to NETFLIX for Rs 499 debited from A/c XX1234.','description']
+  ['CANBNK','Your A/c XX1234 debited Rs 499 for subscription payment to NETFLIX.','description']
 ];
 for (const [sender, body, kind] of accuracyCases) {
   test('parser accuracy: ' + kind + ' — ' + body.slice(0, 38), () => {
