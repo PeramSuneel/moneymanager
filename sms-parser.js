@@ -7,11 +7,15 @@ function parseSms(sender, body, timestamp) {
     if (!text || !from || !/(HDFC|SBI|ICICI|AXIS|KOTAK|PNB|CANBNK|CANARA|YESBNK|IDFC|PAYTM|AIRTEL|JIOFIN|FEDBNK|BOB|UNION|INDUS|RBL|AUFB)/i.test(from)) return null;
 
     if (/\b(OTP|ONE TIME PASSWORD|VERIFICATION CODE)\b/i.test(text)) return null;
+    const requestOrCollect = /\b(?:REQUEST\s+FOR|HAS\s+REQUESTED|REQUESTED\s+MONEY|COLLECT\s+REQUEST|PAY\s+REQUEST|PAYMENT\s+REQUEST|REQUEST\s+TO\s+(?:PAY|DEBIT))\b/i.test(text) ||
+      (/\b(?:APPROVE|APPROVAL)\b/i.test(text) && /\b(?:REQUEST|COLLECT|UPI)\b/i.test(text));
+    const creditCardDueReminder = /\b(?:CREDIT\s*CARD|CARD)\b[\s\S]{0,80}\bDUE\b|\bDUE\b[\s\S]{0,80}\b(?:CREDIT\s*CARD|CARD)\b/i.test(text);
     if (/\b(FAILED|FAILURE|UNSUCCESSFUL|SCHEDULED|MANDATE|REMINDER)\b/i.test(text) ||
         /\b(?:transaction|payment|transfer|debit|credit)\s+(?:was\s+)?declined\b|\bdeclined\s+(?:transaction|payment|transfer)\b/i.test(text) ||
         /\bWILL\s+BE\s+DEBITED\b/i.test(text) ||
         /\bREVERSED?[- ]ATTEMPT\b/i.test(text) ||
-        /\b(?:PAYMENT\s+REQUEST|REQUEST\s+TO\s+(?:PAY|DEBIT)|PAYMENT\s+DUE|DUE\s+DATE)\b/i.test(text)) return null;
+        requestOrCollect || creditCardDueReminder ||
+        /\b(?:PAYMENT\s+DUE|DUE\s+DATE)\b/i.test(text)) return null;
 
     const balanceMarker = /\b(?:AVAIL(?:ABLE)?\s+BAL(?:ANCE)?(?:\s+IS)?|BAL(?:ANCE)?\s*(?=[:=]|(?:RS\.?|INR|₹)\s)|LIMIT\s*(?=[:=]|(?:RS\.?|INR|₹)\s))/i;
     const balanceMatch = balanceMarker.exec(text);
