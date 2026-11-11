@@ -194,9 +194,16 @@ test('Step 2c: conflicting debit and credit actions are low confidence', () => {
   assert.ok(result);
   assert.equal(result.confidence, 'low');
 });
-test('Step 2c: uncertain direction is low confidence rather than auto-add safe', () => {
+test('Step 2c: uncertain direction is returned as low-confidence review candidate', () => {
   const result = parseSms('HDFCBK', 'Account XX1234 transaction for Rs 100 at SHOP.', at);
-  if (result) assert.equal(result.confidence, 'low');
+  assert.ok(result);
+  assert.equal(result.type, 'Unknown');
+  assert.equal(result.confidence, 'low');
+});
+test('Step 2c: competing plausible amounts are low confidence', () => {
+  const result = parseSms('HDFCBK', 'A/c XX1234 debited Rs 100 or Rs 105 for SHOP.', at);
+  assert.ok(result);
+  assert.equal(result.confidence, 'low');
 });
 test('Step 2c: clean description for subscription debit is Bank - NETFLIX', () => {
   const result = parseSms('HDFCBK', 'Your A/c XX1234 debited Rs 499 for subscription payment to NETFLIX.', at);
