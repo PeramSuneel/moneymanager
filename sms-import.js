@@ -1,7 +1,7 @@
 'use strict';
 
 (function (root, factory) {
-  const api = factory();
+  const api = factory(root);
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (root) {
     root.MoneyManagerSmsImport = api;
@@ -11,7 +11,7 @@
       else start();
     }
   }
-})(typeof window !== 'undefined' ? window : globalThis, function () {
+})(typeof window !== 'undefined' ? window : globalThis, function (root) {
   const PROCESSED_KEY = 'moneyManagerSmsProcessed.v1';
   const REVIEW_KEY = 'moneyManagerSmsNeedsReview.v1';
   const VALID_CATEGORIES = new Set([
