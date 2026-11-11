@@ -117,7 +117,3 @@
   return { createSmsImport, parseSmsBlocks, initSmsImportUI, PROCESSED_KEY, REVIEW_KEY };
 });
 
-if (typeof window !== 'undefined') {
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSmsImportUI);
-  else initSmsImportUI();
-}
