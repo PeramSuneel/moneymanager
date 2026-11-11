@@ -108,6 +108,7 @@ function parseSms(sender, body, timestamp) {
         }
       }
     }
+    if (/^(?:A\/C|AC|ACCOUNT)\s+/i.test(merchant)) merchant = '';
     if (!merchant) {
       const fromMerchant = transactionText.match(/\bfrom\s+(?!A\/C\b|AC\b|ACCOUNT\b)([A-Z0-9][A-Z0-9 &._-]{1,30}?)(?=\s+(?:call|if|to\s+dispute|ref|upi)\b|[.,;]|$)/i);
       if (fromMerchant) merchant = fromMerchant[1].trim();
