@@ -2,7 +2,7 @@ name: Test and deploy mobile browser preview
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/android-sms]
   workflow_dispatch:
 
 permissions:
@@ -32,10 +32,13 @@ jobs:
         run: node --check app.js && node --check market.js
       - name: Run financial calculation regression tests
         run: node --test tests/calculations.test.cjs
+      - name: Run SMS parser tests
+        run: node --test tests/sms-parser.test.cjs
       - name: Run mobile preview smoke tests
         run: node tests/preview-smoke.mjs
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     needs: test
     environment:
       name: github-pages
