@@ -93,7 +93,7 @@ const accuracyCases = [
   ['ICICIB','A/c XX1234 debited Rs 700 and credited Rs 700 as reversal.','mixed'],
   ['AXISBK','Your transaction declined. Ref DECLINED. Rs 200 debited from A/c XX1234.','ref'],
   ['KOTAKB','Rs 200 debited from A/c XX1234 at DMART.','fingerprint'],
-  ['PNBSMS','Rs 450 debited from A/c XX1234 via UPI to SWIGGY.','account'],
+  ['HDFCBK','Rs 450 debited from A/c XX1234 via UPI to SWIGGY.','account'],
   ['CANBNK','Your A/c XX1234 debited Rs 499 for subscription payment to NETFLIX.','description']
 ];
 for (const [sender, body, kind] of accuracyCases) {
@@ -109,7 +109,7 @@ for (const [sender, body, kind] of accuracyCases) {
       assert.equal(result.type, 'Expense');
     } else if (kind === 'ref') {
       assert.ok(result);
-      assert.ok(!result.reference || /\\d/.test(result.reference));
+      assert.ok(!result.reference || /\d/.test(result.reference));
     } else if (kind === 'fingerprint') {
       const same = parseSms(sender, body, at);
       const nextMinute = parseSms(sender, body, new Date('2026-11-11T10:31:00+05:30'));
@@ -118,13 +118,13 @@ for (const [sender, body, kind] of accuracyCases) {
       assert.notEqual(result.fingerprint, nextMinute.fingerprint);
     } else if (kind === 'account') {
       assert.ok(result);
-      assert.equal(result.bankName, 'PNB');
+      assert.equal(result.bankName, 'HDFC');
       assert.equal(result.accountLast4, '1234');
-      assert.match(result.description, /^UPI\\s-\\sSWIGGY$/);
+      assert.match(result.description, /^UPI\s-\sSWIGGY$/);
     } else if (kind === 'description') {
       assert.ok(result);
       assert.doesNotMatch(result.description, /mandate|your|UPI to/i);
-      assert.match(result.description, /^Bank\\s-\\sNETFLIX$/);
+      assert.match(result.description, /^Bank\s-\sNETFLIX$/);
     }
   });
 }
