@@ -90,6 +90,8 @@ function parseSms(sender, body, timestamp) {
     }
 
     let merchant = '';
+    const creditFrom = transactionText.match(/\bcredited\b[\s\S]*?\bfrom\s+([A-Z][A-Z0-9 &._-]{1,30}?)(?=[.,;]|\s+(?:call|if|to\s+dispute|ref|upi)\b|$)/i);
+    if (creditFrom) merchant = creditFrom[1].trim();
     const pathMerchant = transactionText.match(/\bUPI\/P2M\/\d+\/([A-Z0-9][A-Z0-9 &._-]{1,30}?)(?=\s|$)/i);
     if (pathMerchant) merchant = pathMerchant[1].trim();
 
