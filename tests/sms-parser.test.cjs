@@ -128,3 +128,74 @@ for (const [sender, body, kind] of accuracyCases) {
     }
   });
 }
+
+
+// Step 2c regressions and safety coverage.
+const step2cCases = [
+  ['KOTAKB','UPI payment of Rs 1,25,000.50 debited from A/c XX5566 to merchant@okaxis. UPI Ref 423456789012.','Expense',125000.5,'Kotak','5566'],
+  ['ICICIB','INR 2,500.00 credited to A/c XX1234 from client payment.','Income',2500,'ICICI','1234'],
+  ['IDFCFB','UPI payment Rs 99.00 paid to TEA SHOP from A/c XX1111. UPI Ref 723456789012.','Expense',99,'IDFC','1111'],
+  ['HDFCBK','Sent Rs.450.00 From HDFC Bank A/C *1234 To SWIGGY On 11/11/26 Ref 612345678901','Expense',450,'HDFC','1234'],
+  ['KOTAKB','Sent Rs.250.00 from Kotak Bank AC X7788 to merchant@ybl','Expense',250,'Kotak','7788'],
+  ['HDFCBK','Rs 100 debited from A/c XX1234 to FOO. UPI Ref 823456789012. Offer: get Rs 500 cashback','Expense',100,'HDFC','1234'],
+  ['HDFCBK','Rs 200 debited from A/c XX1234 trf to RAMESH Refno 612345678903','Expense',200,'HDFC','1234'],
+  ['HDFCBK','UPI/P2M/612345678905/ZOMATO SMS BLOCKUPI payment Rs 300 debited from A/c XX1234','Expense',300,'HDFC','1234'],
+  ['ICICIB','Rs 500 credited to A/c XX1234 from ZEPTO. Call 1800 to dispute','Income',500,'ICICI','1234'],
+  ['HDFCBK','Rs 50 debited from A/c XX123 to TEA SHOP. UPI Ref 923456789012.','Expense',50,'HDFC','123'],
+  ['HDFCBK','Rs 60 debited from A/c X4321 to TEA SHOP. UPI Ref 923456789013.','Expense',60,'HDFC','4321'],
+  ['HDFCBK','Rs 70 debited from A/c *1234 to TEA SHOP. UPI Ref 923456789014.','Expense',70,'HDFC','1234']
+];
+for (const [sender, body, type, amount, bank, last4] of step2cCases) {
+  test('Step 2c real-world SMS: ' + body.slice(0, 52), () => {
+    const result = parseSms(sender, body, at);
+    assert.ok(result, 'expected a transaction candidate');
+    assert.equal(result.type, type);
+    assert.equal(result.amount, amount);
+    assert.equal(result.bankName, bank);
+    assert.equal(result.accountLast4, last4);
+    assert.ok(['high','low'].includes(result.confidence));
+  });
+}
+test('Step 2c: promo-only SMS remains ignored', () => {
+  assert.equal(parseSms('HDFCBK', 'Special offer: get Rs 500 cashback on shopping. PROMO', at), null);
+});
+test('Step 2c: reference containing DECLINED is not accepted without a digit', () => {
+  const result = parseSms('AXISBK', 'Rs 200 debited from A/c XX1234. Ref DECLINED.', at);
+  assert.ok(result);
+  assert.equal(result.reference, '');
+});
+test('Step 2c: bank name uses sender ID before text fallback', () => {
+  const result = parseSms('HDFCBK', 'Rs 200 debited from A/c XX1234 at SHOP. Ref 123456789012. PNB transfer partner.', at);
+  assert.equal(result.bankName, 'HDFC');
+});
+test('Step 2c: merchant extraction stops at reference and operational text', () => {
+  const a = parseSms('HDFCBK', 'Rs 200 debited from A/c XX1234 trf to RAMESH Refno 612345678903', at);
+  const b = parseSms('HDFCBK', 'UPI/P2M/612345678905/ZOMATO SMS BLOCKUPI payment Rs 300 debited from A/c XX1234', at);
+  const c = parseSms('ICICIB', 'Rs 500 credited to A/c XX1234 from ZEPTO. Call 1800 to dispute', at);
+  assert.match(a.description, /RAMESH/);
+  assert.doesNotMatch(a.description, /Refno|612345/);
+  assert.match(b.description, /ZOMATO/);
+  assert.doesNotMatch(b.description, /BLOCKUPI|SMS/);
+  assert.match(c.description, /ZEPTO/);
+  assert.doesNotMatch(c.description, /dispute|1800/);
+});
+test('Step 2c: empty or junk merchant is low confidence', () => {
+  const empty = parseSms('HDFCBK', 'Rs 100 debited from A/c XX1234. UPI Ref 123456789012.', at);
+  const junk = parseSms('HDFCBK', 'Rs 100 debited from A/c XX1234 to if not. UPI Ref 123456789013.', at);
+  assert.equal(empty.confidence, 'low');
+  assert.equal(junk.confidence, 'low');
+});
+test('Step 2c: conflicting debit and credit actions are low confidence', () => {
+  const result = parseSms('ICICIB', 'A/c XX1234 debited Rs 700 and credited Rs 700 as reversal.', at);
+  assert.ok(result);
+  assert.equal(result.confidence, 'low');
+});
+test('Step 2c: uncertain direction is low confidence rather than auto-add safe', () => {
+  const result = parseSms('HDFCBK', 'Account XX1234 transaction for Rs 100 at SHOP.', at);
+  if (result) assert.equal(result.confidence, 'low');
+});
+test('Step 2c: clean description for subscription debit is Bank - NETFLIX', () => {
+  const result = parseSms('HDFCBK', 'Your A/c XX1234 debited Rs 499 for subscription payment to NETFLIX.', at);
+  assert.ok(result);
+  assert.equal(result.description, 'Bank - NETFLIX');
+});
